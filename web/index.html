@@ -375,6 +375,42 @@
             </div>
         </main>
 
+        <div class="controls">
+            <button id="generate-btn" class="generate-btn">🔄 生成数据</button>
+            <button id="configure-btn" class="configure-btn">⚙️ 配置API</button>
+        </div>
+
+        <!-- API配置模态框 -->
+        <div id="api-config-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>⚙️ API 配置</h2>
+                <form id="api-config-form">
+                    <div class="form-group">
+                        <label for="api-provider">API 提供商:</label>
+                        <select id="api-provider" name="provider">
+                            <option value="qwen">通义千问</option>
+                            <option value="minimax">MiniMax</option>
+                            <option value="openai">OpenAI</option>
+                            <option value="anthropic">Anthropic</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="api-key">API Key:</label>
+                        <input type="password" id="api-key" name="apiKey" placeholder="输入您的API密钥">
+                    </div>
+                    <div class="form-group">
+                        <label for="api-endpoint">API 端点:</label>
+                        <input type="text" id="api-endpoint" name="endpoint" placeholder="API端点URL">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="save-config">💾 保存配置</button>
+                        <button type="button" id="cancel-config">❌ 取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <footer class="update-info">
             <p>📋 最后更新: <span id="last-update"></span></p>
             <p>🔄 自动更新: 每周五上午10:00</p>
