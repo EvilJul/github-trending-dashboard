@@ -8,9 +8,12 @@ class GitHubTrendingDashboard {
     }
 
     async init() {
-        await this.loadProjects();
+        // 先设置按钮事件（不依赖数据）
+        this.setupControls();
         this.setupLanguageFilters();
-        this.setupControls(); // 新增控制按钮
+        
+        // 然后加载数据
+        await this.loadProjects();
         this.renderProjects();
         this.updateLastUpdated();
         this.setupAutoRefresh();
@@ -184,7 +187,7 @@ class GitHubTrendingDashboard {
         }
     }
 
-    // 新增：从GitHub API获取趋势项目
+    // 新增：从GitHub API获取趋势项目（增强版：包含数据分析）
     async fetchTrendingProjects() {
         const url = "https://api.github.com/search/repositories";
         
@@ -193,27 +196,54 @@ class GitHubTrendingDashboard {
         weekAgo.setDate(weekAgo.getDate() - 7);
         const dateStr = weekAgo.toISOString().split('T')[0];
         
-        const params = {
-            q: `created:>${dateStr} OR pushed:>${dateStr}`,
-            sort: 'stars',
-            order: 'desc',
-            per_page: 10
-        };
-
-        const queryString = new URLSearchParams(params).toString();
-        const response = await fetch(`${url}?${queryString}`, {
-            headers: {
-                'Accept': 'application/vnd.github.v3+json',
-                'User-Agent': 'GitHub-Trending-Dashboard'
+        // 查询多个领域的热门项目
+        const queries = [
+            `created:>${dateStr} sort:stars`,
+            `topic:data-science created:>${dateStr}`,
+            `topic:machine-learning created:>${dateStr}`,
+            `topic:data-analysis created:>${dateStr}`
+        ];
+        
+        let allProjects = [];
+        
+        for (const query of queries) {
+            try {
+                const params = {
+                    q: query,
+                    per_page: 10
+                };
+                
+                const queryString = new URLSearchParams(params).toString();
+                const response = await fetch(`${url}?${queryString}`, {
+                    headers: {
+                        'Accept': 'application/vnd.github.v3+json',
+                        'User-Agent': 'GitHub-Trending-Dashboard'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    allProjects = allProjects.concat(data.items || []);
+                }
+            } catch (error) {
+                console.warn(`查询失败: ${query}`, error);
             }
-        });
-
-        if (!response.ok) {
-            throw new Error(`GitHub API 请求失败: ${response.status}`);
         }
-
-        const data = await response.json();
-        return data.items.slice(0, 10).map(repo => ({
+        
+        // 去重并按star排序
+        const seen = new Set();
+        const uniqueProjects = [];
+        for (const repo of allProjects) {
+            if (!seen.has(repo.id)) {
+                seen.add(repo.id);
+                uniqueProjects.push(repo);
+            }
+        }
+        
+        // 按star数量排序，取前10
+        uniqueProjects.sort((a, b) => b.stargazers_count - a.stargazers_count);
+        
+        return uniqueProjects.slice(0, 10).map(repo => ({
             name: repo.full_name,
             fullName: repo.full_name,
             url: repo.html_url,
@@ -235,32 +265,65 @@ class GitHubTrendingDashboard {
         }));
     }
 
-    // 新增：根据仓库信息推测分类
+    // 新增：根据仓库信息推测分类（增强版）
     getCategoryFromRepo(repo) {
         const topics = repo.topics || [];
         const description = (repo.description || '').toLowerCase();
+        const name = (repo.name || '').toLowerCase();
         
-        if (topics.includes('ai') || topics.includes('ml') || topics.includes('deep-learning') ||
-            description.includes('ai') || description.includes('machine learning') || 
-            description.includes('neural network')) {
-            return 'AI';
-        } else if (topics.includes('web') || topics.includes('frontend') || 
-                  description.includes('web') || description.includes('frontend')) {
-            return 'Web开发';
-        } else if (topics.includes('mobile') || description.includes('mobile')) {
-            return '移动开发';
-        } else if (topics.includes('devops') || topics.includes('docker') || 
-                  description.includes('devops') || description.includes('ci/cd')) {
-            return 'DevOps';
-        } else if (repo.language === 'Java') {
-            return 'Java生态';
-        } else if (repo.language === 'Python') {
-            return 'Python生态';
-        } else if (repo.language === 'JavaScript' || repo.language === 'TypeScript') {
-            return '前端技术';
-        } else {
-            return '通用工具';
+        // 数据分析相关
+        if (topics.includes('data-science') || topics.includes('data-analysis') || 
+            topics.includes('analytics') || topics.includes('statistics') ||
+            description.includes('data analysis') || description.includes('data science') ||
+            description.includes('analytics') || description.includes('statistics') ||
+            name.includes('pandas') || name.includes('numpy') || name.includes('jupyter')) {
+            return '数据分析';
         }
+        
+        // 机器学习/AI
+        if (topics.includes('ai') || topics.includes('ml') || topics.includes('deep-learning') ||
+            topics.includes('neural-network') || topics.includes('machine-learning') ||
+            description.includes('machine learning') || description.includes('deep learning') ||
+            description.includes('neural network') || description.includes('artificial intelligence')) {
+            return 'AI/机器学习';
+        }
+        
+        // Web开发
+        if (topics.includes('web') || topics.includes('frontend') || topics.includes('backend') ||
+            description.includes('web ') || description.includes('frontend') || 
+            description.includes('backend') || description.includes('http')) {
+            return 'Web开发';
+        }
+        
+        // 移动开发
+        if (topics.includes('mobile') || topics.includes('android') || topics.includes('ios') ||
+            description.includes('mobile') || description.includes('android') || description.includes('ios')) {
+            return '移动开发';
+        }
+        
+        // DevOps
+        if (topics.includes('devops') || topics.includes('docker') || topics.includes('kubernetes') ||
+            topics.includes('ci-cd') || description.includes('devops') || description.includes('docker')) {
+            return 'DevOps';
+        }
+        
+        // Python生态
+        if (repo.language === 'Python' || name.includes('python')) {
+            return 'Python生态';
+        }
+        
+        // Java生态
+        if (repo.language === 'Java' || name.includes('java')) {
+            return 'Java生态';
+        }
+        
+        // JavaScript生态
+        if (repo.language === 'JavaScript' || repo.language === 'TypeScript') {
+            return '前端技术';
+        }
+        
+        // 默认分类
+        return '通用工具';
     }
 
     // 新增：使用AI增强项目信息
