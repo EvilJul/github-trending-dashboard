@@ -1,0 +1,45 @@
+{
+  "history": [
+    {
+      "id": "2026-W4",
+      "week": "2026年1月第4周",
+      "date": "2026-01-24",
+      "totalProjects": 8,
+      "categories": {
+        "Java": 2,
+        "Python": 4,
+        "AI": 5
+      },
+      "projects": [
+        { "name": "alibaba/spring-ai-alibaba", "stars": 1100, "trend": "rising" },
+        { "name": "ultralytics/yolov5", "stars": 45000, "trend": "stable" },
+        { "name": "langchain-ai/langchain", "stars": 68000, "trend": "rising" },
+        { "name": "huggingface/transformers", "stars": 115000, "trend": "stable" },
+        { "name": "comfyui/ComfyUI", "stars": 52000, "trend": "rising" },
+        { "name": "ollama/ollama", "stars": 78000, "trend": "rising" },
+        { "name": "TeamNewPipe/NewPipe", "stars": 28800, "trend": "stable" },
+        { "name": "apache/dolphinscheduler", "stars": 12100, "trend": "stable" }
+      ]
+    },
+    {
+      "id": "2026-W3",
+      "week": "2026年1月第3周",
+      "date": "2026-01-17",
+      "totalProjects": 7,
+      "categories": {
+        "Java": 2,
+        "Python": 3,
+        "AI": 4
+      },
+      "projects": [
+        { "name": "langchain-ai/langchain", "stars": 67000, "trend": "rising" },
+        { "name": "ollama/ollama", "stars": 75000, "trend": "rising" },
+        { "name": "huggingface/transformers", "stars": 114000, "trend": "stable" },
+        { "name": "ultralytics/yolov5", "stars": 44800, "trend": "stable" },
+        { "name": "comfyui/ComfyUI", "stars": 50000, "trend": "rising" },
+        { "name": "TeamNewPipe/NewPipe", "stars": 28500, "trend": "stable" },
+        { "name": "apache/dolphinscheduler", "stars": 11900, "trend": "stable" }
+      ]
+    }
+  ]
+}
