@@ -142,41 +142,45 @@ class GitHubTrendingDashboard {
 
     // 新增：使用API生成数据
     async generateDataWithApi() {
+        const generateBtn = document.getElementById('generate-btn');
+        if (!generateBtn) {
+            console.error('生成数据按钮不存在');
+            return;
+        }
+        
+        // 检查API配置
         if (!this.apiConfig || !this.apiConfig.apiKey) {
             alert('请先配置API！点击右上角的"配置API"按钮。');
             this.showApiConfigModal();
             return;
         }
 
-        const generateBtn = document.getElementById('generate-btn');
-        if (generateBtn) {
-            const originalText = generateBtn.innerHTML;
-            generateBtn.innerHTML = '<span class="loading"></span> 生成中...';
-            generateBtn.disabled = true;
+        const originalText = generateBtn.innerHTML;
+        generateBtn.innerHTML = '<span class="loading"></span> 生成中...';
+        generateBtn.disabled = true;
 
-            try {
-                // 从GitHub API获取最新的趋势项目
-                const trendingProjects = await this.fetchTrendingProjects();
+        try {
+            console.log('开始获取GitHub趋势项目...');
+            
+            // 直接从GitHub API获取数据（不依赖AI API）
+            const trendingProjects = await this.fetchTrendingProjects();
 
-                // 使用API对项目进行分析和优化描述
-                const enhancedProjects = await this.enhanceProjectsWithAI(trendingProjects);
+            // 保存新数据
+            await this.saveProjectsData(trendingProjects);
 
-                // 保存新数据
-                await this.saveProjectsData(enhancedProjects);
+            // 重新加载并渲染
+            this.projects = trendingProjects;
+            this.renderProjects();
+            this.updateLastUpdated();
 
-                // 重新加载并渲染
-                this.projects = enhancedProjects;
-                this.renderProjects();
-                this.updateLastUpdated();
-
-                alert(`数据生成成功！共处理了 ${enhancedProjects.length} 个项目。`);
-            } catch (error) {
-                console.error('生成数据失败:', error);
-                alert(`数据生成失败: ${error.message}`);
-            } finally {
-                generateBtn.innerHTML = originalText;
-                generateBtn.disabled = false;
-            }
+            console.log(`数据生成成功！共处理了 ${trendingProjects.length} 个项目。`);
+            alert(`数据生成成功！已更新 ${trendingProjects.length} 个项目。`);
+        } catch (error) {
+            console.error('生成数据失败:', error);
+            alert(`数据生成失败: ${error.message}`);
+        } finally {
+            generateBtn.innerHTML = originalText;
+            generateBtn.disabled = false;
         }
     }
 
