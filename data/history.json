@@ -1,6 +1,25 @@
 {
   "history": [
     {
+      "id": "2026-W5",
+      "week": "2026年1月第5周",
+      "date": "2026-01-30",
+      "totalProjects": 5,
+      "categories": {
+        "Python": 1,
+        "Java": 2,
+        "Markdown": 1,
+        "Unknown": 1
+      },
+      "projects": [
+        { "name": "521xueweihan/HelloGitHub", "trend": "rising" },
+        { "name": "krahets/hello-algo", "trend": "rising" },
+        { "name": "lss233/kirara-ai", "trend": "rising" },
+        { "name": "jeecgboot/JeecgBoot", "trend": "rising" },
+        { "name": "alibaba/higress", "trend": "stable" }
+      ]
+    },
+    {
       "id": "2026-W4",
       "week": "2026年1月第4周",
       "date": "2026-01-24",
