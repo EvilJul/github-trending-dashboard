@@ -213,3 +213,32 @@ class GitHubService:
                 seen.add(p.full_name)
                 unique.append(p)
         return unique
+
+    async def fetch_readme(self, full_name: str) -> Optional[str]:
+        """获取项目 README 内容"""
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            try:
+                response = await client.get(
+                    f"{self.BASE_URL}/repos/{full_name}/readme",
+                    headers=self.headers
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    import base64
+                    content = data.get("content", "")
+                    encoding = data.get("encoding", "base64")
+                    
+                    if encoding == "base64":
+                        # 解码 base64 内容
+                        decoded = base64.b64decode(content).decode("utf-8", errors="ignore")
+                        return decoded
+                    return content
+                elif response.status_code == 404:
+                    return None
+                else:
+                    print(f"Failed to fetch README for {full_name}: {response.status_code}")
+                    return None
+            except Exception as e:
+                print(f"Error fetching README for {full_name}: {e}")
+                return None

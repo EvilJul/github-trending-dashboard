@@ -142,3 +142,36 @@ async def get_stats():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/{project_name}/readme")
+async def get_project_readme(project_name: str):
+    """
+    获取项目 README 内容
+    """
+    try:
+        # 先从本地数据中查找项目
+        projects = storage.get_projects()
+        project = None
+        
+        for p in projects:
+            if p.name == project_name or p.full_name == project_name:
+                project = p
+                break
+        
+        if not project:
+            raise HTTPException(status_code=404, detail=f"Project {project_name} not found")
+        
+        # 从 GitHub 获取 README
+        readme_content = await github_service.fetch_readme(project.full_name)
+        
+        return {
+            "project": project_name,
+            "full_name": project.full_name,
+            "readme": readme_content,
+            "has_readme": readme_content is not None
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

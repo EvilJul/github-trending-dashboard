@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目详情 - GitHub Trending Projects</title>
+    <style>
+        :root {
+            --primary-color: #2d3748;
+            --secondary-color: #4a5568;
+            --accent-color: #3182ce;
+            --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --light-color: #f7fafc;
+            --dark-color: #1a202c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            color: var(--light-color);
+            min-height: 100vh;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        body.loaded {
+            opacity: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.6s ease forwards;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #a0aec0;
+            font-size: 1rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateX(-5px);
+        }
+
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .nav-btn {
+            padding: 10px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: var(--light-color);
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-btn.secondary {
+            background: var(--accent-gradient);
+            border-color: transparent;
+        }
+
+        /* Project Header Card */
+        .project-header-card {
+            background: rgba(26, 32, 44, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .project-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .project-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .project-title a:hover {
+            text-decoration: underline;
+        }
+
+        .project-description {
+            color: #cbd5e0;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a0aec0;
+        }
+
+        .meta-value {
+            font-weight: 600;
+            color: var(--light-color);
+            font-size: 1.1rem;
+        }
+
+        .language-tag {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        .language-tag.java { background: rgba(198, 120, 66, 0.2); color: #e6915a; }
+        .language-tag.python { background: rgba(55, 118, 171, 0.2); color: #5fa8e6; }
+        .language-tag.typescript { background: rgba(49, 120, 198, 0.2); color: #3178c6; }
+        .language-tag.javascript { background: rgba(247, 223, 30, 0.2); color: #f7df1e; }
+        .language-tag.go { background: rgba(0, 173, 216, 0.2); color: #00add8; }
+        .language-tag.rust { background: rgba(230, 100, 60, 0.2); color: #e6643c; }
+        .language-tag.cpp, .language-tag.c { background: rgba(0, 100, 200, 0.2); color: #00599c; }
+        .language-tag.other { background: rgba(158, 158, 158, 0.2); color: #bdbdbd; }
+
+        .category-tag {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn.primary {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+        }
+
+        .action-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(26, 32, 44, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: #667eea;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #a0aec0;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #667eea;
+        }
+
+        /* README Section */
+        .readme-container {
+            background: rgba(26, 32, 44, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .readme-content {
+            color: #cbd5e0;
+            line-height: 1.8;
+        }
+
+        .readme-content h1, .readme-content h2, .readme-content h3 {
+            color: #667eea;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .readme-content h1 { font-size: 1.8rem; }
+        .readme-content h2 { font-size: 1.5rem; }
+        .readme-content h3 { font-size: 1.2rem; }
+
+        .readme-content p {
+            margin-bottom: 1em;
+        }
+
+        .readme-content ul, .readme-content ol {
+            margin-left: 1.5em;
+            margin-bottom: 1em;
+        }
+
+        .readme-content li {
+            margin-bottom: 0.5em;
+        }
+
+        .readme-content code {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+
+        .readme-content pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1em 0;
+        }
+
+        .readme-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .readme-content blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 1em 0;
+            color: #a0aec0;
+        }
+
+        .readme-content a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .readme-content a:hover {
+            text-decoration: underline;
+        }
+
+        .readme-content img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .readme-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+        }
+
+        .readme-content th, .readme-content td {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            text-align: left;
+        }
+
+        .readme-content th {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        /* Usage Steps */
+        .usage-steps-list {
+            list-style: none;
+        }
+
+        .usage-steps-list li {
+            padding: 15px 20px;
+            background: rgba(26, 32, 44, 0.4);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .usage-steps-list li:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateX(5px);
+        }
+
+        .step-number {
+            background: var(--accent-gradient);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content code {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+
+        /* Loading */
+        .loading-container {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #f56565;
+        }
+
+        /* Empty README */
+        .empty-readme {
+            text-align: center;
+            padding: 40px;
+            color: #a0aec0;
+        }
+
+        .empty-readme-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        /* Footer */
+        .footer-info {
+            text-align: center;
+            padding: 30px;
+            color: #a0aec0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .project-meta {
+                gap: 15px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📦 项目详情</h1>
+            <p class="subtitle" id="project-subtitle">GitHub Trending 项目</p>
+        </header>
+
+        <nav class="nav-bar">
+            <a href="index.html" class="nav-btn secondary">📊 热门项目</a>
+            <a href="history.html" class="nav-btn">📋 历史记录</a>
+        </nav>
+
+        <a href="javascript:history.back()" class="back-link">← 返回上一页</a>
+
+        <main id="project-container">
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">正在加载项目数据...</p>
+            </div>
+        </main>
+
+        <footer class="footer-info">
+            <p>🔄 Powered by Clawdbot</p>
+        </footer>
+    </div>
+
+    <script>
+        class ProjectDetail {
+            constructor() {
+                this.projectName = this.getProjectName();
+                this.projectData = null;
+                this.readmeContent = null;
+                this.init();
+            }
+
+            getProjectName() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('project') || '';
+            }
+
+            async init() {
+                if (!this.projectName) {
+                    this.showError('缺少项目名称');
+                    return;
+                }
+                await this.loadProjectData();
+                this.renderProject();
+            }
+
+            async loadProjectData() {
+                try {
+                    // 并行加载项目详情和 README
+                    const [projectResponse, readmeResponse] = await Promise.all([
+                        fetch(`/api/projects/${this.projectName}`),
+                        fetch(`/api/projects/${this.projectName}/readme`)
+                    ]);
+
+                    if (projectResponse.ok) {
+                        this.projectData = await projectResponse.json();
+                    } else {
+                        this.showError('项目不存在');
+                        return;
+                    }
+
+                    if (readmeResponse.ok) {
+                        const readmeData = await readmeResponse.json();
+                        this.readmeContent = readmeData.readme;
+                    }
+                } catch (error) {
+                    console.warn('加载项目数据失败:', error);
+                    this.showError('加载失败: ' + error.message);
+                }
+            }
+
+            showError(message) {
+                const container = document.getElementById('project-container');
+                container.innerHTML = `
+                    <div class="error-message">
+                        <h3>❌ ${message}</h3>
+                        <p>请返回首页重新选择项目</p>
+                    </div>
+                `;
+            }
+
+            formatNumber(num) {
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+                return num.toString();
+            }
+
+            getLanguageClass(language) {
+                const langMap = {
+                    'Java': 'java', 'Python': 'python', 'TypeScript': 'typescript',
+                    'JavaScript': 'javascript', 'Go': 'go', 'Rust': 'rust',
+                    'C++': 'cpp', 'C': 'c', 'Shell': 'other'
+                };
+                return langMap[language] || 'other';
+            }
+
+            escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            renderMarkdown(content) {
+                if (!content) return '';
+                
+                // 基本 Markdown 转换
+                let html = this.escapeHtml(content);
+                
+                // 标题
+                html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+                html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+                html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+                
+                // 粗体
+                html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                
+                // 斜体
+                html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                
+                // 行内代码
+                html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+                
+                // 代码块
+                html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+                
+                // 链接
+                html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+                
+                // 无序列表
+                html = html.replace(/^- (.*$)/gm, '<li>$1</li>');
+                html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+                
+                // 有序列表
+                html = html.replace(/^\d+\. (.*$)/gm, '<li>$1</li>');
+                
+                // 引用
+                html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
+                
+                // 水平线
+                html = html.replace(/^---$/gm, '<hr>');
+                
+                // 段落
+                html = html.replace(/\n\n/g, '</p><p>');
+                html = '<p>' + html + '</p>';
+                
+                // 清理空的段落
+                html = html.replace(/<p>\s*<\/p>/g, '');
+                
+                return html;
+            }
+
+            renderProject() {
+                const container = document.getElementById('project-container');
+                
+                if (!this.projectData) {
+                    this.showError('项目数据为空');
+                    return;
+                }
+
+                const p = this.projectData;
+                document.getElementById('project-subtitle').textContent = p.full_name || this.projectName;
+
+                const usageSteps = p.usage_steps || [];
+
+                container.innerHTML = `
+                    <!-- 项目头部信息 -->
+                    <div class="project-header-card">
+                        <h2 class="project-title">
+                            <a href="${p.url || '#'}" target="_blank">${p.full_name || p.name}</a>
+                        </h2>
+                        <p class="project-description">${p.description || '暂无描述'}</p>
+                        
+                        <div class="project-meta">
+                            <div class="meta-item">
+                                <span>⭐</span>
+                                <span class="meta-value">${this.formatNumber(p.stars)}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>🍴</span>
+                                <span class="meta-value">${this.formatNumber(p.forks)}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>🐛</span>
+                                <span class="meta-value">${this.formatNumber(p.issues)}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>📅</span>
+                                <span class="meta-value">${p.category || '通用工具'}</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="language-tag ${this.getLanguageClass(p.language)}">${p.language || 'Other'}</span>
+                            <span class="category-tag">${p.category || '通用工具'}</span>
+                        </div>
+
+                        <div class="action-buttons">
+                            <a href="${p.url || '#'}" target="_blank" class="action-btn primary">
+                                🔗 查看 GitHub
+                            </a>
+                            ${p.full_name ? `
+                            <a href="https://github.com/${p.full_name}" target="_blank" class="action-btn secondary">
+                                ⭐ Star 项目
+                            </a>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <!-- 使用指南 -->
+                    ${usageSteps.length > 0 ? `
+                    <div class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">🔧 使用指南</h2>
+                        </div>
+                        <ul class="usage-steps-list">
+                            ${usageSteps.map((step, index) => {
+                                // 格式化步骤中的代码部分
+                                const formattedStep = step.replace(/`([^`]+)`/g, '<code>$1</code>');
+                                return `
+                                    <li>
+                                        <span class="step-number">${index + 1}</span>
+                                        <span class="step-content">${formattedStep}</span>
+                                    </li>
+                                `;
+                            }).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
+
+                    <!-- README 部分 -->
+                    <div class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">📄 项目介绍</h2>
+                        </div>
+                        <div class="readme-container">
+                            ${this.readmeContent ? `
+                                <div class="readme-content">
+                                    ${this.renderMarkdown(this.readmeContent)}
+                                </div>
+                            ` : `
+                                <div class="empty-readme">
+                                    <div class="empty-readme-icon">📝</div>
+                                    <p>该项目暂无 README 文件</p>
+                                    <p style="margin-top: 10px; font-size: 0.9rem;">
+                                        <a href="${p.url || '#'}" target="_blank" style="color: #667eea;">
+                                            前往 GitHub 查看项目详情 →
+                                        </a>
+                                    </p>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('loaded');
+            new ProjectDetail();
+        });
+    </script>
+</body>
+</html>

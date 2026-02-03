@@ -170,9 +170,10 @@ class HistoryPage {
                         const name = typeof project === 'object' ? project.full_name : project;
                         const stars = typeof project === 'object' ? project.stars : 0;
                         const trend = typeof project === 'object' ? project.trend : 'stable';
+                        const projectName = typeof project === 'object' ? project.name : project.split('/')[1];
                         return `
                             <div class="project-item">
-                                <div class="project-name">${name}</div>
+                                <a href="project.html?project=${encodeURIComponent(projectName)}" class="project-name" style="color: #667eea; text-decoration: none;">${name}</a>
                                 <div class="project-meta">
                                     <span>⭐ ${this.formatNumber(stars)}</span>
                                     <span class="trend-indicator trend-${trend}">${this.getTrendText(trend)}</span>

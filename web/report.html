@@ -443,18 +443,34 @@
                 }
 
                 try {
+                    // 先尝试从当前历史记录列表中查找
+                    const historyResponse = await fetch('/api/history/');
+                    if (historyResponse.ok) {
+                        const historyData = await historyResponse.json();
+                        const history = historyData.history || [];
+                        
+                        // 查找匹配的记录
+                        const record = history.find(h => h.id === this.reportId);
+                        if (record) {
+                            this.reportData = record;
+                            document.getElementById('report-subtitle').textContent = 
+                                this.reportData.week || `报告 #${this.reportId}`;
+                            return;
+                        }
+                    }
+                    
+                    // 如果没找到，尝试直接调用 API
                     const response = await fetch(`/api/history/${this.reportId}`);
                     if (response.ok) {
                         this.reportData = await response.json();
                         document.getElementById('report-subtitle').textContent = 
                             this.reportData.week || `报告 #${this.reportId}`;
                     } else {
-                        // 如果API返回404，尝试从主历史记录获取
-                        await this.loadFromHistoryList();
+                        this.showError('报告不存在或已被删除');
                     }
                 } catch (error) {
-                    console.warn('加载报告数据失败，尝试备用方案:', error);
-                    await this.loadFromHistoryList();
+                    console.warn('加载报告数据失败:', error);
+                    this.showError('加载失败: ' + error.message);
                 }
             }
 
@@ -642,7 +658,7 @@
                             ${projects.map((project, index) => `
                                 <div class="project-card" style="animation-delay: ${index * 0.05}s;">
                                     <div class="card-header">
-                                        <a href="${project.url || '#'}" target="_blank" class="project-name">
+                                        <a href="project.html?project=${encodeURIComponent(project.name)}" class="project-name">
                                             ${project.full_name || project.name}
                                         </a>
                                         ${this.getTrendBadge(project.trend)}
