@@ -384,25 +384,33 @@ class GitHubTrendingDashboard {
         container.classList.add('projects-grid');
 
         filteredProjects.forEach((project, index) => {
-            const card = document.createElement('div');
+            const card = document.createElement('a');
+            card.href = `project.html?project=${encodeURIComponent(project.name)}`;
             card.className = 'card';
             card.style.animationDelay = `${index * 0.1}s`;
+            card.style.textDecoration = 'none';
+            card.style.display = 'block';
+            
+            const shortName = (project.fullName || project.name || '').split('/')[1] || project.name;
             
             card.innerHTML = `
                 <div class="card-header">
                     <div class="repo-icon">🌟</div>
                     <div class="repo-title">
-                        <a href="${project.url}" target="_blank" class="repo-link">${project.name}</a>
+                        <span class="repo-link">${project.name}</span>
                     </div>
                     ${this.getTrendIndicator(project.trend)}
                 </div>
                 <div class="repo-description">${project.description || '暂无描述'}</div>
                 
-                <div class="action-buttons">
-                    <a href="${project.forkUrl || project.url + '/fork'}" target="_blank" class="action-btn fork-btn">
+                <div class="action-buttons" onclick="event.stopPropagation()">
+                    <a href="${project.url}" target="_blank" class="action-btn fork-btn" onclick="event.stopPropagation()">
+                        🔗 GitHub
+                    </a>
+                    <a href="${project.forkUrl || project.url + '/fork'}" target="_blank" class="action-btn fork-btn" onclick="event.stopPropagation()">
                         🍴 Fork
                     </a>
-                    <a href="${project.issuesUrl || project.url + '/issues'}" target="_blank" class="action-btn issues-btn">
+                    <a href="${project.issuesUrl || project.url + '/issues'}" target="_blank" class="action-btn issues-btn" onclick="event.stopPropagation()">
                         📋 Issues (${project.issues || 0})
                     </a>
                 </div>
