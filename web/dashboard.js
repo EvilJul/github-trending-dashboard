@@ -593,7 +593,7 @@ class GitHubTrendingDashboard {
         setTimeout(() => {
             notification.classList.add('notification-hide');
             setTimeout(() => notification.remove(), 300);
-        }, 3000);
+        }, 5000);  // 显示5秒
     }
 
     renderProjects() {
@@ -617,7 +617,9 @@ class GitHubTrendingDashboard {
 
         filteredProjects.forEach((project, index) => {
             const card = document.createElement('a');
-            card.href = `project.html?project=${encodeURIComponent(project.name)}`;
+            // 使用 full_name 作为项目标识符
+            const projectKey = project.fullName || project.full_name || project.name;
+            card.href = `project.html?project=${encodeURIComponent(projectKey)}`;
             card.className = 'card';
             card.style.animationDelay = `${index * 0.1}s`;
             card.style.textDecoration = 'none';
