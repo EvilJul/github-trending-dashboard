@@ -20,11 +20,30 @@ class GitHubService:
     }
 
     def __init__(self, token: Optional[str] = None):
+        # 如果没有提供 token，尝试从配置文件读取
+        if token is None:
+            token = self._load_token_from_config()
+        
         self.token = token
         if token:
             self.headers = {**self.HEADERS, "Authorization": f"token {token}"}
         else:
             self.headers = self.HEADERS
+
+    def _load_token_from_config(self) -> Optional[str]:
+        """从配置文件加载 GitHub Token"""
+        try:
+            config_file = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)), 
+                "config.json"
+            )
+            if os.path.exists(config_file):
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+                    return config.get("github", {}).get("token")
+        except Exception as e:
+            print(f"加载 GitHub Token 失败: {e}")
+        return None
 
     async def _rate_limit_wait(self, client: httpx.AsyncClient) -> None:
         """处理速率限制"""

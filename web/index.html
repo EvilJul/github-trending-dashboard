@@ -691,6 +691,65 @@
             color: #667eea;
         }
 
+        /* 高级设置区域 */
+        .advanced-section {
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .advanced-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(102, 126, 234, 0.1);
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.3s ease;
+        }
+
+        .advanced-header:hover {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .advanced-header span:first-child {
+            font-weight: 600;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .advanced-toggle {
+            color: #667eea;
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .advanced-section.collapsed .advanced-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .advanced-section.collapsed .advanced-content {
+            display: none;
+        }
+
+        .advanced-content {
+            padding: 16px;
+        }
+
+        .optional-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+
         /* Notification */
         .notification {
             position: fixed;
@@ -999,6 +1058,29 @@
                         <label for="api-key">API Key</label>
                         <input type="password" id="api-key" name="apiKey" placeholder="输入您的API密钥">
                     </div>
+                    
+                    <!-- GitHub Token 高级配置 -->
+                    <div class="advanced-section">
+                        <div class="advanced-header" onclick="toggleAdvanced()">
+                            <span>🔧 高级设置</span>
+                            <span class="advanced-toggle">▼</span>
+                        </div>
+                        <div class="advanced-content" id="advanced-content">
+                            <div class="form-group">
+                                <label for="github-token">
+                                    GitHub Token 
+                                    <span class="optional-badge">可选</span>
+                                </label>
+                                <input type="password" id="github-token" name="githubToken" placeholder="ghp_xxxxxxxxxxxx">
+                                <small style="color: #a0aec0; font-size: 0.8rem; margin-top: 5px; display: block;">
+                                    提高 GitHub API 限制 (60→5000次/小时)。在 
+                                    <a href="https://github.com/settings/tokens" target="_blank" style="color: #667eea;">GitHub Settings</a> 
+                                    生成（需要 repo 权限）
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="form-actions">
                         <button type="button" id="test-config" class="btn-secondary">
                             <span class="btn-icon">🔍</span>

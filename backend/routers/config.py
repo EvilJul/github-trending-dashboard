@@ -31,6 +31,16 @@ class AIConfigResponse(BaseModel):
     has_api_key: bool  # 只返回是否配置，不返回实际 key
 
 
+class GitHubConfig(BaseModel):
+    """GitHub 配置"""
+    token: str = ""
+
+
+class GitHubConfigResponse(BaseModel):
+    """GitHub 配置响应"""
+    has_token: bool
+
+
 def load_config() -> dict:
     """加载配置文件"""
     if not os.path.exists(CONFIG_FILE):
@@ -180,3 +190,62 @@ async def delete_ai_config():
         save_config(config)
     
     return {"success": True, "message": "配置已删除"}
+
+
+# ==================== GitHub Token 配置 ====================
+
+@router.get("/github", response_model=GitHubConfigResponse)
+async def get_github_config():
+    """
+    获取 GitHub Token 配置（不返回实际 token）
+    """
+    config = load_config()
+    github_config = config.get("github", {})
+    
+    return GitHubConfigResponse(
+        has_token=bool(github_config.get("token", ""))
+    )
+
+
+@router.post("/github/save")
+async def save_github_config(config: GitHubConfig):
+    """
+    保存 GitHub Token（持久化）
+    如果 token 为空，删除已有配置
+    """
+    try:
+        current_config = load_config()
+        
+        if config.token:
+            # 保存 token
+            current_config["github"] = {
+                "token": config.token
+            }
+        else:
+            # 删除 token 配置
+            if "github" in current_config:
+                del current_config["github"]
+        
+        save_config(current_config)
+        
+        return {
+            "success": True,
+            "message": "GitHub 配置已保存",
+            "has_token": bool(config.token)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/github")
+async def delete_github_config():
+    """
+    删除 GitHub Token 配置
+    """
+    config = load_config()
+    if "github" in config:
+        del config["github"]
+        save_config(config)
+    
+    return {"success": True, "message": "GitHub 配置已删除"}
