@@ -10,8 +10,10 @@ from typing import Optional
 
 router = APIRouter(prefix="/api/config", tags=["config"])
 
-# 配置文件路径
-CONFIG_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.json")
+# 配置文件路径（项目根目录的 config.json）
+CONFIG_FILE = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "config.json")
+)
 CONFIG_DIR = os.path.dirname(CONFIG_FILE)
 
 
