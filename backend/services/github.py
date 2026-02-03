@@ -16,10 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 def safe_str(s: str) -> str:
-    """安全字符串处理，移除或替换无法编码的字符"""
+    """安全字符串处理"""
     if s is None:
         return ""
-    # 清理控制字符，保留可打印字符
     cleaned = ''.join(c for c in s if unicodedata.category(c)[0] != 'C' or c in '\n\t')
     return cleaned
 
@@ -34,7 +33,6 @@ class GitHubService:
     }
 
     def __init__(self, token: Optional[str] = None):
-        # 如果没有提供 token，尝试从配置文件读取
         if token is None:
             token = self._load_token_from_config()
         
@@ -47,7 +45,6 @@ class GitHubService:
             logger.warning("未配置 GitHub Token，使用公共请求限制")
 
     def _load_token_from_config(self) -> Optional[str]:
-        """从配置文件加载 GitHub Token"""
         try:
             config_file = os.path.join(
                 os.path.dirname(os.path.dirname(__file__)), 
@@ -56,10 +53,7 @@ class GitHubService:
             if os.path.exists(config_file):
                 with open(config_file, 'r', encoding='utf-8') as f:
                     config = json.load(f)
-                    token = config.get("github", {}).get("token")
-                    if token:
-                        logger.info("已加载 GitHub Token")
-                    return token
+                    return config.get("github", {}).get("token")
         except Exception as e:
             logger.error(f"加载 GitHub Token 失败: {e}")
         return None
@@ -68,11 +62,10 @@ class GitHubService:
         """获取热门项目"""
         all_projects = []
         
-        # GitHub Trending 查询：按星标排序，不限制创建时间
-        logger.info(f"获取 GitHub Trending 项目")
+        logger.info("获取 GitHub Trending 项目")
 
         queries = [
-            "sort:stars stars:>1000",  # 星标>1000，按星标排序
+            "sort:stars stars:>1000",
         ]
 
         async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
@@ -86,9 +79,8 @@ class GitHubService:
                     )
 
                     if response.status_code == 200:
-                        # 确保响应内容使用 UTF-8 解码
                         data = response.json()
-                        items = data.get("items", [])[:20]
+                        items = data.get("items", [])[:30]
                         for item in items:
                             project = self._parse_repository(item)
                             if project:
@@ -111,16 +103,14 @@ class GitHubService:
         sorted_projects = sorted(unique_projects, key=lambda x: x.stars, reverse=True)
         
         logger.info(f"共获取 {len(sorted_projects)} 个项目")
-        return sorted_projects[:20]
+        return sorted_projects[:30]
 
     def _parse_repository(self, repo: dict) -> Optional[ProjectCreate]:
-        """解析 GitHub 仓库数据"""
         try:
             name = repo.get("full_name", "")
             if not name:
                 return None
 
-            # 安全处理描述
             description = safe_str(repo.get("description") or "暂无描述")
 
             return ProjectCreate(
@@ -143,7 +133,6 @@ class GitHubService:
             return None
 
     def _categorize(self, repo: dict) -> str:
-        """分类项目"""
         topics = repo.get("topics", []) or []
         description = (repo.get("description", "") or "").lower()
         name = (repo.get("name", "") or "").lower()
@@ -181,7 +170,6 @@ class GitHubService:
         return "通用工具"
 
     def _calculate_trend(self, repo: dict) -> str:
-        """计算趋势"""
         stars = repo.get("stargazers_count", 0)
         recent_stars = repo.get("stargazers_since_last_analytic", 0)
 
@@ -193,7 +181,6 @@ class GitHubService:
             return "stable"
 
     def _generate_usage_steps(self, full_name: str, repo: dict) -> List[str]:
-        """生成使用步骤"""
         steps = [
             f"克隆项目: git clone https://github.com/{full_name}",
             "进入项目目录"
@@ -231,7 +218,6 @@ class GitHubService:
         return steps
 
     def _deduplicate(self, projects: List[ProjectCreate]) -> List[ProjectCreate]:
-        """去重"""
         seen = set()
         unique = []
         for p in projects:
@@ -241,34 +227,117 @@ class GitHubService:
         return unique
 
     async def fetch_readme(self, full_name: str) -> Optional[str]:
-        """获取项目 README 内容"""
-        try:
-            logger.info(f"获取 README: {full_name}")
-            
-            readme_headers = {
-                **self.headers,
-                "Accept": "application/vnd.github.raw"
-            }
-            
-            async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
-                # 确保使用正确的编码
-                response = await client.get(
-                    f"{self.BASE_URL}/repos/{full_name}/readme",
-                    headers=readme_headers
-                )
-                
-                if response.status_code == 200:
-                    # 强制使用 UTF-8 解码
-                    content = response.content.decode('utf-8', errors='ignore')
-                    logger.info(f"README 获取成功: {full_name} ({len(content)} 字符)")
-                    return content
-                elif response.status_code == 404:
-                    logger.info(f"项目无 README: {full_name}")
-                    return None
-                else:
-                    logger.warning(f"获取 README 失败 ({full_name}): {response.status_code}")
-                    return None
-                    
-        except Exception as e:
-            logger.error(f"获取 README 出错: {e}")
+        """
+        获取项目 README 内容 - 尝试多种方法
+        """
+        logger.info(f"获取 README: {full_name}")
+        
+        # 移除可能的前缀
+        if full_name.startswith('github.com/'):
+            full_name = full_name.replace('github.com/', '')
+        
+        if full_name.startswith('http://github.com/'):
+            full_name = full_name.replace('http://github.com/', '')
+        if full_name.startswith('https://github.com/'):
+            full_name = full_name.replace('https://github.com/', '')
+        
+        parts = full_name.split('/')
+        if len(parts) >= 2:
+            owner = parts[0]
+            repo = parts[1]
+        else:
+            logger.error(f"无效的仓库名称: {full_name}")
             return None
+        
+        # 尝试方法1: 使用 GitHub API 获取 README
+        readme_content = await self._fetch_readme_api(owner, repo)
+        if readme_content:
+            return readme_content
+        
+        # 尝试方法2: 直接获取默认分支的内容
+        readme_content = await self._fetch_readme_content(owner, repo)
+        if readme_content:
+            return readme_content
+        
+        logger.warning(f"无法获取 README: {full_name}")
+        return None
+
+    async def _fetch_readme_api(self, owner: str, repo: str) -> Optional[str]:
+        """方法1: 使用 GitHub READMEs API"""
+        try:
+            async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+                # 先获取仓库信息，找到默认分支
+                repo_url = f"{self.BASE_URL}/repos/{owner}/{repo}"
+                repo_response = await client.get(repo_url, headers=self.headers)
+                
+                if repo_response.status_code == 200:
+                    repo_info = repo_response.json()
+                    default_branch = repo_info.get("default_branch", "main")
+                    
+                    # 使用 readme API
+                    readme_url = f"{self.BASE_URL}/repos/{owner}/{repo}/readme"
+                    readme_headers = {
+                        **self.headers,
+                        "Accept": "application/vnd.github.raw"
+                    }
+                    
+                    readme_response = await client.get(
+                        readme_url,
+                        headers=readme_headers
+                    )
+                    
+                    if readme_response.status_code == 200:
+                        content = readme_response.content.decode('utf-8', errors='ignore')
+                        logger.info(f"README API 获取成功: {owner}/{repo}")
+                        return content
+                    else:
+                        logger.debug(f"README API 返回: {readme_response.status_code}")
+                        
+        except Exception as e:
+            logger.debug(f"README API 方法失败: {e}")
+        
+        return None
+
+    async def _fetch_readme_content(self, owner: str, repo: str) -> Optional[str]:
+        """方法2: 直接获取 README.md 文件内容"""
+        try:
+            async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+                # 获取仓库信息
+                repo_url = f"{self.BASE_URL}/repos/{owner}/{repo}"
+                repo_response = await client.get(repo_url, headers=self.headers)
+                
+                if repo_response.status_code != 200:
+                    return None
+                
+                repo_info = repo_response.json()
+                default_branch = repo_info.get("default_branch", "main")
+                
+                # 尝试多个 README 文件名
+                readme_names = ["README.md", "readme.md", "README.rst", "README.txt", "README", "readme"]
+                
+                for readme_name in readme_names:
+                    try:
+                        content_url = f"{self.BASE_URL}/repos/{owner}/{repo}/contents/{readme_name}"
+                        content_headers = {
+                            **self.headers,
+                            "Accept": "application/vnd.github.raw"
+                        }
+                        
+                        content_response = await client.get(
+                            content_url,
+                            params={"ref": default_branch},
+                            headers=content_headers
+                        )
+                        
+                        if content_response.status_code == 200:
+                            content = content_response.content.decode('utf-8', errors='ignore')
+                            logger.info(f"通过内容 API 获取 README 成功: {readme_name}")
+                            return content
+                            
+                    except Exception:
+                        continue
+                        
+        except Exception as e:
+            logger.debug(f"内容 API 方法失败: {e}")
+        
+        return None
