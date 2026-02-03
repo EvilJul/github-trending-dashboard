@@ -227,28 +227,44 @@ async def get_stats():
 async def get_project_readme(project_name: str):
     """
     获取项目 README 内容
+    支持 full_name (如 antfu/skills) 或 name (如 skills)
     """
     try:
-        # 先从本地数据中查找项目
-        projects = storage.get_projects()
-        project = None
-        
-        for p in projects:
-            if p.name == project_name or p.full_name == project_name:
-                project = p
-                break
-        
-        if not project:
-            raise HTTPException(status_code=404, detail=f"Project {project_name} not found")
+        # 判断是否是 full_name 格式
+        if "/" in project_name:
+            # 直接使用 full_name 获取 README
+            full_name = project_name
+        else:
+            # 从本地数据中查找项目
+            projects = storage.get_projects()
+            project = None
+            
+            for p in projects:
+                if p.name == project_name or p.full_name == project_name:
+                    project = p
+                    break
+            
+            if not project:
+                raise HTTPException(status_code=404, detail=f"Project {project_name} not found")
+            
+            full_name = project.full_name
         
         # 从 GitHub 获取 README
-        readme_content = await github_service.fetch_readme(project.full_name)
+        readme_content = await github_service.fetch_readme(full_name)
+        
+        if readme_content is None:
+            return {
+                "project": project_name,
+                "full_name": full_name,
+                "readme": None,
+                "has_readme": False
+            }
         
         return {
             "project": project_name,
-            "full_name": project.full_name,
+            "full_name": full_name,
             "readme": readme_content,
-            "has_readme": readme_content is not None
+            "has_readme": True
         }
     except HTTPException:
         raise
