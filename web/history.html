@@ -421,7 +421,7 @@
                     section.innerHTML = `
                         <div class="history-header">
                             <span class="history-date">📅 ${displayDate}</span>
-                            <a href="#" class="report-link">📄 查看完整报告</a>
+                            <a href="report.html?id=${record.id}" class="report-link">📄 查看完整报告</a>
                         </div>
                         
                         <div class="summary-content">
@@ -448,16 +448,24 @@
                             </div>
                         </div>
 
-                        <h4 style="margin: 20px 0 15px 0;">🏆 本周 Top 3 项目</h4>
+                        <h4 style="margin: 20px 0 15px 0;">🏆 本周 Top ${projects.slice(0, 5).length} 项目</h4>
                         <div class="projects-preview">
                             ${projects.slice(0, 5).map(project => `
                                 <div class="project-item">
-                                    <div class="project-name">${project.name}</div>
+                                    <div class="project-name">${project.full_name || project.name}</div>
                                     <div class="project-stats">
-                                        <span>⭐ ${this.formatNumber(project.stars)}</span>
+                                        <span>⭐ ${this.formatNumber(project.stars || 0)}</span>
                                         <span>🐍 ${project.language || '-'}</span>
                                         <span>${this.getTrendEmoji(project.trend)}</span>
                                     </div>
+                                    ${project.description ? `
+                                    <p style="color: #a0aec0; font-size: 0.85rem; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        ${project.description}
+                                    </p>
+                                    ` : ''}
+                                    ${project.category ? `
+                                    <span class="language-tag ${this.getLanguageClass(project.language)}" style="margin-top: 8px; font-size: 0.75rem;">${project.category}</span>
+                                    ` : ''}
                                 </div>
                             `).join('')}
                         </div>
@@ -474,6 +482,15 @@
                     langs[lang] = (langs[lang] || 0) + 1;
                 });
                 return Object.keys(langs).sort((a, b) => langs[b] - langs[a])[0] || '-';
+            }
+
+            getLanguageClass(language) {
+                const langMap = {
+                    'Java': 'java', 'Python': 'python', 'TypeScript': 'typescript',
+                    'JavaScript': 'javascript', 'Go': 'go', 'Rust': 'rust',
+                    'C++': 'cpp', 'C': 'c', 'Shell': 'other'
+                };
+                return langMap[language] || 'other';
             }
         }
 

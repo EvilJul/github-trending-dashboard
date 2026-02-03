@@ -65,18 +65,38 @@ async def refresh_projects():
         # 保存到文件
         saved_data = storage.save_projects(projects)
 
-        # 添加历史记录
+        # 添加历史记录 - 保存完整的项目详情
         from models.schemas import HistoryRecord
         from datetime import datetime
 
         week_num = datetime.now().isocalendar()[1]
         year = datetime.now().year
+        
+        # 构建完整的项目详情列表
+        projects_detail = []
+        for p in projects:
+            projects_detail.append({
+                "name": p.name,
+                "full_name": p.full_name,
+                "url": p.url,
+                "description": p.description,
+                "language": p.language,
+                "stars": p.stars,
+                "forks": p.forks,
+                "issues": p.issues,
+                "fork_url": p.fork_url,
+                "issues_url": p.issues_url,
+                "category": p.category,
+                "trend": p.trend,
+                "usage_steps": p.usage_steps
+            })
+        
         record = HistoryRecord(
             id=f"{year}-W{week_num}",
             week=f"{year}年{week_num}月第{week_num}周",
             date=datetime.now().strftime("%Y-%m-%d"),
             total_projects=len(projects),
-            projects=[p.full_name for p in projects]
+            projects=projects_detail  # 保存完整项目详情
         )
         storage.add_history_record(record)
 

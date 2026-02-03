@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-02-02T16:42:36.757876",
+  "last_updated": "2026-02-03T03:24:02.844207",
   "projects": [
     {
       "name": "beautiful-mermaid",
@@ -7,9 +7,9 @@
       "url": "https://github.com/lukilabs/beautiful-mermaid",
       "description": "暂无描述",
       "language": "TypeScript",
-      "stars": 5391,
-      "forks": 149,
-      "issues": 18,
+      "stars": 5484,
+      "forks": 156,
+      "issues": 19,
       "fork_url": "https://github.com/lukilabs/beautiful-mermaid/fork",
       "issues_url": "https://github.com/lukilabs/beautiful-mermaid/issues",
       "category": "前端技术",
@@ -22,13 +22,33 @@
       ]
     },
     {
+      "name": "nanoclaw",
+      "full_name": "gavrielc/nanoclaw",
+      "url": "https://github.com/gavrielc/nanoclaw",
+      "description": "My personal Claude assistant that runs in Apple containers. Lightweight, secure, and built to be understood and customized for your own needs.",
+      "language": "TypeScript",
+      "stars": 3100,
+      "forks": 252,
+      "issues": 15,
+      "fork_url": "https://github.com/gavrielc/nanoclaw/fork",
+      "issues_url": "https://github.com/gavrielc/nanoclaw/issues",
+      "category": "AI/机器学习",
+      "trend": "falling",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/gavrielc/nanoclaw",
+        "进入项目目录",
+        "安装依赖: npm install",
+        "运行开发服务器: npm run dev"
+      ]
+    },
+    {
       "name": "skills",
       "full_name": "antfu/skills",
       "url": "https://github.com/antfu/skills",
       "description": "Anthony Fu's curated collection of agent skills.",
       "language": "TypeScript",
-      "stars": 2661,
-      "forks": 103,
+      "stars": 2734,
+      "forks": 109,
       "issues": 3,
       "fork_url": "https://github.com/antfu/skills/fork",
       "issues_url": "https://github.com/antfu/skills/issues",
@@ -42,23 +62,24 @@
       ]
     },
     {
-      "name": "nanoclaw",
-      "full_name": "gavrielc/nanoclaw",
-      "url": "https://github.com/gavrielc/nanoclaw",
-      "description": "My personal Claude assistant that runs in Apple containers. Lightweight, secure, and built to be understood and customized for your own needs.",
-      "language": "TypeScript",
-      "stars": 2326,
-      "forks": 178,
-      "issues": 13,
-      "fork_url": "https://github.com/gavrielc/nanoclaw/fork",
-      "issues_url": "https://github.com/gavrielc/nanoclaw/issues",
-      "category": "AI/机器学习",
+      "name": "nanobot",
+      "full_name": "HKUDS/nanobot",
+      "url": "https://github.com/HKUDS/nanobot",
+      "description": "\"🐈 nanobot: The Ultra-Lightweight Clawdbot\"",
+      "language": "Python",
+      "stars": 2194,
+      "forks": 285,
+      "issues": 27,
+      "fork_url": "https://github.com/HKUDS/nanobot/fork",
+      "issues_url": "https://github.com/HKUDS/nanobot/issues",
+      "category": "Python生态",
       "trend": "falling",
       "usage_steps": [
-        "克隆项目: git clone https://github.com/gavrielc/nanoclaw",
+        "克隆项目: git clone https://github.com/HKUDS/nanobot",
         "进入项目目录",
-        "安装依赖: npm install",
-        "运行开发服务器: npm run dev"
+        "创建虚拟环境: python -m venv venv",
+        "安装依赖: pip install -r requirements.txt",
+        "运行项目: python main.py"
       ]
     },
     {
@@ -67,8 +88,8 @@
       "url": "https://github.com/Robbyant/lingbot-world",
       "description": "Advancing Open-source World Models",
       "language": "Python",
-      "stars": 2049,
-      "forks": 144,
+      "stars": 2158,
+      "forks": 158,
       "issues": 12,
       "fork_url": "https://github.com/Robbyant/lingbot-world/fork",
       "issues_url": "https://github.com/Robbyant/lingbot-world/issues",
@@ -83,34 +104,13 @@
       ]
     },
     {
-      "name": "nanobot",
-      "full_name": "HKUDS/nanobot",
-      "url": "https://github.com/HKUDS/nanobot",
-      "description": "\"🐈 nanobot: The Ultra-Lightweight Clawdbot\"",
-      "language": "Python",
-      "stars": 1473,
-      "forks": 184,
-      "issues": 15,
-      "fork_url": "https://github.com/HKUDS/nanobot/fork",
-      "issues_url": "https://github.com/HKUDS/nanobot/issues",
-      "category": "Python生态",
-      "trend": "falling",
-      "usage_steps": [
-        "克隆项目: git clone https://github.com/HKUDS/nanobot",
-        "进入项目目录",
-        "创建虚拟环境: python -m venv venv",
-        "安装依赖: pip install -r requirements.txt",
-        "运行项目: python main.py"
-      ]
-    },
-    {
       "name": "awesome-ai-research-writing",
       "full_name": "Leey21/awesome-ai-research-writing",
       "url": "https://github.com/Leey21/awesome-ai-research-writing",
       "description": "Elevate your AI research writing, no more tedious polishing ✨ ",
       "language": "Other",
-      "stars": 1170,
-      "forks": 94,
+      "stars": 1367,
+      "forks": 114,
       "issues": 0,
       "fork_url": "https://github.com/Leey21/awesome-ai-research-writing/fork",
       "issues_url": "https://github.com/Leey21/awesome-ai-research-writing/issues",
@@ -129,9 +129,9 @@
       "url": "https://github.com/QwenLM/Qwen3-ASR",
       "description": "Qwen3-ASR is an open-source series of ASR models developed by the Qwen team at Alibaba Cloud, supporting stable multilingual speech/music/song recognition, language detection and timestamp prediction.",
       "language": "Python",
-      "stars": 1089,
-      "forks": 82,
-      "issues": 16,
+      "stars": 1126,
+      "forks": 84,
+      "issues": 17,
       "fork_url": "https://github.com/QwenLM/Qwen3-ASR/fork",
       "issues_url": "https://github.com/QwenLM/Qwen3-ASR/issues",
       "category": "Python生态",
@@ -150,9 +150,9 @@
       "url": "https://github.com/miaoxworld/OpenClawInstaller",
       "description": "ClawdBot 一键部署工具",
       "language": "Shell",
-      "stars": 983,
-      "forks": 161,
-      "issues": 7,
+      "stars": 1017,
+      "forks": 166,
+      "issues": 8,
       "fork_url": "https://github.com/miaoxworld/OpenClawInstaller/fork",
       "issues_url": "https://github.com/miaoxworld/OpenClawInstaller/issues",
       "category": "通用工具",
@@ -170,9 +170,9 @@
       "url": "https://github.com/DingTalk-Real-AI/dingtalk-moltbot-connector",
       "description": "将钉钉机器人连接到 OpenClaw Gateway 的OpenClaw Plugin，支持 AI Card 流式响应",
       "language": "TypeScript",
-      "stars": 867,
+      "stars": 897,
       "forks": 55,
-      "issues": 13,
+      "issues": 14,
       "fork_url": "https://github.com/DingTalk-Real-AI/dingtalk-moltbot-connector/fork",
       "issues_url": "https://github.com/DingTalk-Real-AI/dingtalk-moltbot-connector/issues",
       "category": "AI/机器学习",
@@ -190,8 +190,8 @@
       "url": "https://github.com/zarazhangrui/frontend-slides",
       "description": "Create beautiful slides on the web using Claude's frontend skills",
       "language": "Other",
-      "stars": 733,
-      "forks": 72,
+      "stars": 743,
+      "forks": 73,
       "issues": 1,
       "fork_url": "https://github.com/zarazhangrui/frontend-slides/fork",
       "issues_url": "https://github.com/zarazhangrui/frontend-slides/issues",
@@ -205,32 +205,12 @@
       ]
     },
     {
-      "name": "ML-Image-Classification-using-CNN",
-      "full_name": "PACKIARAJ-R/ML-Image-Classification-using-CNN",
-      "url": "https://github.com/PACKIARAJ-R/ML-Image-Classification-using-CNN",
-      "description": "Built a CNN-based image classification system with data preprocessing, model training, evaluation, and result visualization using accuracy curves and confusion matrix for reliable image recognition.",
-      "language": "Jupyter Notebook",
-      "stars": 19,
-      "forks": 0,
-      "issues": 0,
-      "fork_url": "https://github.com/PACKIARAJ-R/ML-Image-Classification-using-CNN/fork",
-      "issues_url": "https://github.com/PACKIARAJ-R/ML-Image-Classification-using-CNN/issues",
-      "category": "AI/机器学习",
-      "trend": "falling",
-      "usage_steps": [
-        "克隆项目: git clone https://github.com/PACKIARAJ-R/ML-Image-Classification-using-CNN",
-        "进入项目目录",
-        "按照 README.md 说明安装依赖",
-        "启动项目"
-      ]
-    },
-    {
       "name": "sdft-pytorch",
       "full_name": "lucidrains/sdft-pytorch",
       "url": "https://github.com/lucidrains/sdft-pytorch",
       "description": "Explorations into the proposed SDFT, Self-Distillation Enables Continual Learning, from Shenfeld et al. of MIT",
       "language": "Python",
-      "stars": 19,
+      "stars": 23,
       "forks": 0,
       "issues": 0,
       "fork_url": "https://github.com/lucidrains/sdft-pytorch/fork",
@@ -243,6 +223,26 @@
         "创建虚拟环境: python -m venv venv",
         "安装依赖: pip install -r requirements.txt",
         "运行项目: python main.py"
+      ]
+    },
+    {
+      "name": "ML-Image-Classification-using-CNN",
+      "full_name": "PACKIARAJ-R/ML-Image-Classification-using-CNN",
+      "url": "https://github.com/PACKIARAJ-R/ML-Image-Classification-using-CNN",
+      "description": "Built a CNN-based image classification system with data preprocessing, model training, evaluation, and result visualization using accuracy curves and confusion matrix for reliable image recognition.",
+      "language": "Jupyter Notebook",
+      "stars": 22,
+      "forks": 0,
+      "issues": 0,
+      "fork_url": "https://github.com/PACKIARAJ-R/ML-Image-Classification-using-CNN/fork",
+      "issues_url": "https://github.com/PACKIARAJ-R/ML-Image-Classification-using-CNN/issues",
+      "category": "AI/机器学习",
+      "trend": "falling",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/PACKIARAJ-R/ML-Image-Classification-using-CNN",
+        "进入项目目录",
+        "按照 README.md 说明安装依赖",
+        "启动项目"
       ]
     },
     {
@@ -327,6 +327,27 @@
       ]
     },
     {
+      "name": "phydrax",
+      "full_name": "phydra-labs/phydrax",
+      "url": "https://github.com/phydra-labs/phydrax",
+      "description": "Modular Physics-ML Components in JAX",
+      "language": "Python",
+      "stars": 5,
+      "forks": 0,
+      "issues": 0,
+      "fork_url": "https://github.com/phydra-labs/phydrax/fork",
+      "issues_url": "https://github.com/phydra-labs/phydrax/issues",
+      "category": "AI/机器学习",
+      "trend": "falling",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/phydra-labs/phydrax",
+        "进入项目目录",
+        "创建虚拟环境: python -m venv venv",
+        "安装依赖: pip install -r requirements.txt",
+        "运行项目: python main.py"
+      ]
+    },
+    {
       "name": "Student-Survey-Quality-Bias-Audit",
       "full_name": "AmirhosseinHonardoust/Student-Survey-Quality-Bias-Audit",
       "url": "https://github.com/AmirhosseinHonardoust/Student-Survey-Quality-Bias-Audit",
@@ -385,26 +406,6 @@
         "进入项目目录",
         "按照 README.md 说明安装依赖",
         "启动项目"
-      ]
-    },
-    {
-      "name": "kandle",
-      "full_name": "final-kk/kandle",
-      "url": "https://github.com/final-kk/kandle",
-      "description": "A JavaScript Native PyTorch-aligned Machine Learning Framework, built from scratch on WebGPU",
-      "language": "TypeScript",
-      "stars": 4,
-      "forks": 0,
-      "issues": 0,
-      "fork_url": "https://github.com/final-kk/kandle/fork",
-      "issues_url": "https://github.com/final-kk/kandle/issues",
-      "category": "AI/机器学习",
-      "trend": "falling",
-      "usage_steps": [
-        "克隆项目: git clone https://github.com/final-kk/kandle",
-        "进入项目目录",
-        "安装依赖: npm install",
-        "运行开发服务器: npm run dev"
       ]
     }
   ],

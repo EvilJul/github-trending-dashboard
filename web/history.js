@@ -129,16 +129,33 @@ class HistoryPage {
         this.historyData.forEach(record => {
             const card = document.createElement('div');
             card.className = 'history-card';
-
+            
+            // 判断projects是完整对象还是只有名称
+            const hasFullDetails = record.projects && record.projects.length > 0 && typeof record.projects[0] === 'object';
+            
             const badges = [];
-            if (record.categories.Java > 0) {
-                badges.push(`<span class="stat-badge badge-java">Java: ${record.categories.Java}</span>`);
-            }
-            if (record.categories.Python > 0) {
-                badges.push(`<span class="stat-badge badge-python">Python: ${record.categories.Python}</span>`);
-            }
-            if (record.categories.AI > 0) {
-                badges.push(`<span class="stat-badge badge-ai">AI: ${record.categories.AI}</span>`);
+            if (hasFullDetails) {
+                // 如果有完整详情，计算语言分布
+                const langs = {};
+                record.projects.forEach(p => {
+                    const lang = p.language || 'Other';
+                    langs[lang] = (langs[lang] || 0) + 1;
+                });
+                Object.entries(langs).slice(0, 3).forEach(([lang, count]) => {
+                    const langClass = this.getLanguageClass(lang);
+                    badges.push(`<span class="stat-badge badge-${langClass}">${lang}: ${count}</span>`);
+                });
+            } else if (record.categories) {
+                // 兼容旧格式
+                if (record.categories.Java > 0) {
+                    badges.push(`<span class="stat-badge badge-java">Java: ${record.categories.Java}</span>`);
+                }
+                if (record.categories.Python > 0) {
+                    badges.push(`<span class="stat-badge badge-python">Python: ${record.categories.Python}</span>`);
+                }
+                if (record.categories.AI > 0) {
+                    badges.push(`<span class="stat-badge badge-ai">AI: ${record.categories.AI}</span>`);
+                }
             }
 
             card.innerHTML = `
@@ -149,20 +166,42 @@ class HistoryPage {
                     </div>
                 </div>
                 <div class="project-list">
-                    ${record.projects.map(project => `
-                        <div class="project-item">
-                            <div class="project-name">${project.name}</div>
-                            <div class="project-meta">
-                                <span>⭐ ${this.formatNumber(project.stars)}</span>
-                                <span class="trend-indicator trend-${project.trend}">${this.getTrendText(project.trend)}</span>
+                    ${record.projects && record.projects.length > 0 ? record.projects.slice(0, 5).map(project => {
+                        const name = typeof project === 'object' ? project.full_name : project;
+                        const stars = typeof project === 'object' ? project.stars : 0;
+                        const trend = typeof project === 'object' ? project.trend : 'stable';
+                        return `
+                            <div class="project-item">
+                                <div class="project-name">${name}</div>
+                                <div class="project-meta">
+                                    <span>⭐ ${this.formatNumber(stars)}</span>
+                                    <span class="trend-indicator trend-${trend}">${this.getTrendText(trend)}</span>
+                                </div>
                             </div>
-                        </div>
-                    `).join('')}
+                        `;
+                    }).join('') : '<p style="color: #a0aec0;">暂无项目数据</p>'}
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <a href="report.html?id=${record.id}" class="report-link" style="display: inline-block; margin-right: 10px;">
+                        📄 查看完整报告
+                    </a>
+                    <span style="color: #a0aec0; font-size: 0.85rem;">
+                        共 ${record.total_projects || (record.projects ? record.projects.length : 0)} 个项目
+                    </span>
                 </div>
             `;
 
             container.appendChild(card);
         });
+    }
+
+    getLanguageClass(language) {
+        const langMap = {
+            'Java': 'java', 'Python': 'python', 'TypeScript': 'typescript',
+            'JavaScript': 'javascript', 'Go': 'go', 'Rust': 'rust',
+            'C++': 'cpp', 'C': 'c', 'Shell': 'other'
+        };
+        return langMap[language] || 'other';
     }
 
     formatNumber(num) {

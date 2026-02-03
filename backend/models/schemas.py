@@ -53,7 +53,7 @@ class HistoryRecord(BaseModel):
     week: str
     date: str
     total_projects: int
-    projects: List[str]
+    projects: List  # 可以是字符串列表（项目名）或对象列表（完整项目详情）
 
 
 class HistoryResponse(BaseModel):
