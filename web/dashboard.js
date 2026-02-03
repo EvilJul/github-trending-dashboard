@@ -153,6 +153,14 @@ class GitHubTrendingDashboard {
             });
         }
 
+        // AI 增强按钮
+        const aiGenerateBtn = document.getElementById('ai-generate-btn');
+        if (aiGenerateBtn) {
+            aiGenerateBtn.addEventListener('click', () => {
+                this.refreshDataWithAI();
+            });
+        }
+
         // 配置API按钮
         const configureBtn = document.getElementById('configure-btn');
         if (configureBtn) {
@@ -193,6 +201,56 @@ class GitHubTrendingDashboard {
         } finally {
             generateBtn.innerHTML = originalText;
             generateBtn.disabled = false;
+        }
+    }
+
+    // AI 增强刷新数据
+    async refreshDataWithAI() {
+        const aiBtn = document.getElementById('ai-generate-btn');
+        if (!aiBtn || this.isLoading) return;
+        
+        // 获取用户配置的 API 信息
+        const apiConfig = this.apiConfig || this.loadApiConfig();
+        
+        if (!apiConfig || !apiConfig.apiKey) {
+            this.showNotification('❌ 请先配置 API Key（点击"API配置"按钮）');
+            return;
+        }
+        
+        const originalText = aiBtn.innerHTML;
+        aiBtn.innerHTML = '<span class="loading-spinner-small"></span> AI 分析中...';
+        aiBtn.disabled = true;
+
+        try {
+            this.showLoading();
+            
+            // 构建 URL 参数
+            const params = new URLSearchParams({
+                provider: apiConfig.provider || 'qwen',
+                api_key: apiConfig.apiKey,
+                endpoint: apiConfig.endpoint || ''
+            });
+            
+            const response = await fetch(`/api/projects/refresh-ai?${params}`, { 
+                method: 'POST' 
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                await this.loadProjects();
+                this.renderProjects();
+                const aiTag = result.ai_enhanced ? ' (AI 增强)' : '';
+                this.showNotification(`✅ ${result.message}${aiTag}`);
+            } else {
+                throw new Error(result.detail || 'AI 刷新失败');
+            }
+        } catch (error) {
+            console.error('AI 刷新失败:', error);
+            this.hideLoading();
+            this.showNotification(`❌ AI 刷新失败: ${error.message}`);
+        } finally {
+            aiBtn.innerHTML = originalText;
+            aiBtn.disabled = false;
         }
     }
 

@@ -1,0 +1,40 @@
+{
+  "project": {
+    "name": "GitHub Trending Projects Dashboard",
+    "version": "1.0.0",
+    "description": "Automated GitHub trending projects dashboard with weekly updates"
+  },
+  "settings": {
+    "updateSchedule": "0 10 * * 5",
+    "timezone": "Asia/Shanghai",
+    "languages": ["Python", "JavaScript", "TypeScript", "Go", "Java"],
+    "numberOfProjects": 10,
+    "displayFields": [
+      "name",
+      "description",
+      "stars",
+      "forks",
+      "issues",
+      "language",
+      "usageSteps"
+    ]
+  },
+  "paths": {
+    "dataFile": "./data/projects.json",
+    "webRoot": "./web",
+    "scripts": "./scripts",
+    "reports": "../reports"
+  },
+  "dashboard": {
+    "title": "GitHub Trending Projects Dashboard",
+    "theme": "dark-tech",
+    "refreshInterval": 300000,
+    "showTrends": true
+  },
+  "ai": {
+    "provider": "qwen",
+    "model": "qwen-plus",
+    "endpoint": "",
+    "apiKey": ""
+  }
+}

@@ -167,11 +167,10 @@
             }
         }
 
-        .generate-btn, .configure-btn {
+        .generate-btn, .configure-btn, .ai-generate-btn {
             padding: 12px 24px;
             border-radius: 10px;
             border: none;
-            background: var(--accent-gradient);
             color: white;
             font-size: 0.95rem;
             font-weight: 600;
@@ -180,12 +179,28 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .generate-btn, .configure-btn {
+            background: var(--accent-gradient);
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .generate-btn:hover, .configure-btn:hover {
+        .ai-generate-btn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+        }
+
+        .generate-btn:hover, .configure-btn:hover, .ai-generate-btn:hover {
             transform: translateY(-2px);
+        }
+
+        .generate-btn:hover, .configure-btn:hover {
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .ai-generate-btn:hover {
+            box-shadow: 0 6px 20px rgba(56, 239, 125, 0.6);
         }
 
         .generate-btn:active, .configure-btn:active {
@@ -850,6 +865,14 @@
                             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
                         </svg>
                         刷新数据
+                    </button>
+                    <button id="ai-generate-btn" class="ai-generate-btn" title="使用 AI 增强项目描述和使用指南">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                        AI 增强
                     </button>
                     <button id="configure-btn" class="configure-btn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

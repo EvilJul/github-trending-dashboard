@@ -110,6 +110,85 @@ async def refresh_projects():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/refresh-ai")
+async def refresh_projects_ai(provider: str = "qwen", api_key: str = "", endpoint: str = ""):
+    """
+    使用 AI 增强刷新项目数据
+    - 获取 GitHub 趋势项目
+    - 使用 AI 生成更丰富的项目描述和使用指南
+    """
+    try:
+        # 创建带 API key 的 GitHub 服务
+        github_svc = GitHubService()
+        
+        # 从 GitHub 获取数据
+        projects = await github_svc.fetch_trending_projects(days=7, per_page=10)
+        
+        # 如果提供了 AI 配置，使用 AI 增强项目数据
+        if api_key and provider:
+            try:
+                from services.ai import AIService
+                ai_service = AIService(provider=provider, api_key=api_key, endpoint=endpoint)
+                
+                # 为每个项目生成增强内容
+                enhanced_projects = []
+                for p in projects:
+                    enhanced = await ai_service.enhance_project(p)
+                    enhanced_projects.append(enhanced)
+                
+                projects = enhanced_projects
+            except Exception as ai_error:
+                print(f"AI 增强失败，使用基础数据: {ai_error}")
+                # 即使 AI 增强失败，也使用基础数据
+
+        # 保存到文件
+        saved_data = storage.save_projects(projects)
+
+        # 添加历史记录
+        from models.schemas import HistoryRecord
+        from datetime import datetime
+
+        week_num = datetime.now().isocalendar()[1]
+        year = datetime.now().year
+        
+        projects_detail = []
+        for p in projects:
+            projects_detail.append({
+                "name": p.name,
+                "full_name": p.full_name,
+                "url": p.url,
+                "description": p.description,
+                "language": p.language,
+                "stars": p.stars,
+                "forks": p.forks,
+                "issues": p.issues,
+                "fork_url": p.fork_url,
+                "issues_url": p.issues_url,
+                "category": p.category,
+                "trend": p.trend,
+                "usage_steps": p.usage_steps
+            })
+        
+        record = HistoryRecord(
+            id=f"{year}-W{week_num}",
+            week=f"{year}年{week_num}月第{week_num}周",
+            date=datetime.now().strftime("%Y-%m-%d"),
+            total_projects=len(projects),
+            projects=projects_detail
+        )
+        storage.add_history_record(record)
+
+        return {
+            "success": True,
+            "message": f"AI 增强刷新成功，获取 {len(projects)} 个项目",
+            "last_updated": saved_data.get("last_updated", ""),
+            "projects_count": len(projects),
+            "ai_enhanced": bool(api_key)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/stats/summary")
 async def get_stats():
     """

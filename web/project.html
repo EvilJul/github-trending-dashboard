@@ -566,25 +566,57 @@
 
             async loadProjectData() {
                 try {
-                    // 并行加载项目详情和 README
-                    const [projectResponse, readmeResponse] = await Promise.all([
-                        fetch(`/api/projects/${this.projectName}`),
-                        fetch(`/api/projects/${this.projectName}/readme`)
-                    ]);
-
+                    console.log('加载项目:', this.projectName);
+                    
+                    // 先加载项目详情
+                    const projectResponse = await fetch(`/api/projects/${encodeURIComponent(this.projectName)}`);
+                    
                     if (projectResponse.ok) {
                         this.projectData = await projectResponse.json();
+                        console.log('项目数据加载成功:', this.projectData);
                     } else {
-                        this.showError('项目不存在');
-                        return;
+                        // 如果项目名没找到，尝试从项目列表中搜索
+                        console.log('直接获取失败，尝试搜索...');
+                        const listResponse = await fetch('/api/projects/');
+                        if (listResponse.ok) {
+                            const listData = await listResponse.json();
+                            const projects = listData.projects || [];
+                            // 尝试匹配 full_name
+                            const matched = projects.find(p => 
+                                p.full_name === this.projectName || 
+                                p.name === this.projectName ||
+                                (p.full_name || '').toLowerCase().includes(this.projectName.toLowerCase())
+                            );
+                            
+                            if (matched) {
+                                this.projectData = matched;
+                                console.log('通过搜索找到项目:', matched);
+                            } else {
+                                this.showError('项目不存在: ' + this.projectName);
+                                return;
+                            }
+                        } else {
+                            this.showError('项目不存在');
+                            return;
+                        }
                     }
 
-                    if (readmeResponse.ok) {
-                        const readmeData = await readmeResponse.json();
-                        this.readmeContent = readmeData.readme;
+                    // 获取 README
+                    if (this.projectData && this.projectData.full_name) {
+                        try {
+                            const readmeResponse = await fetch(`/api/projects/${encodeURIComponent(this.projectData.name)}/readme`);
+                            if (readmeResponse.ok) {
+                                const readmeData = await readmeResponse.json();
+                                this.readmeContent = readmeData.readme;
+                                console.log('README加载成功');
+                            }
+                        } catch (e) {
+                            console.warn('README加载失败:', e);
+                            this.readmeContent = null;
+                        }
                     }
                 } catch (error) {
-                    console.warn('加载项目数据失败:', error);
+                    console.error('加载项目数据失败:', error);
                     this.showError('加载失败: ' + error.message);
                 }
             }
