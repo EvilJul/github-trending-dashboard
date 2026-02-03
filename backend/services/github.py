@@ -218,23 +218,22 @@ class GitHubService:
         """获取项目 README 内容"""
         async with httpx.AsyncClient(timeout=30.0) as client:
             try:
+                # README API 需要正确的 Accept header
+                readme_headers = {
+                    **self.headers,
+                    "Accept": "application/vnd.github.raw"
+                }
+                
                 response = await client.get(
                     f"{self.BASE_URL}/repos/{full_name}/readme",
-                    headers=self.headers
+                    headers=readme_headers
                 )
                 
                 if response.status_code == 200:
-                    data = response.json()
-                    import base64
-                    content = data.get("content", "")
-                    encoding = data.get("encoding", "base64")
-                    
-                    if encoding == "base64":
-                        # 解码 base64 内容
-                        decoded = base64.b64decode(content).decode("utf-8", errors="ignore")
-                        return decoded
-                    return content
+                    # 直接返回原始内容
+                    return response.text
                 elif response.status_code == 404:
+                    print(f"README not found for {full_name}")
                     return None
                 else:
                     print(f"Failed to fetch README for {full_name}: {response.status_code}")
