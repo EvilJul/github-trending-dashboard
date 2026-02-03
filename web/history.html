@@ -101,7 +101,6 @@
             border-color: transparent;
         }
 
-        /* History Section */
         .history-section {
             margin-bottom: 40px;
             animation: fadeInUp 0.6s ease forwards;
@@ -234,7 +233,6 @@
             flex-wrap: wrap;
         }
 
-        /* Loading State */
         .loading-container {
             text-align: center;
             padding: 60px 20px;
@@ -318,186 +316,6 @@
         </footer>
     </div>
 
-    <script>
-        class HistoryManager {
-            constructor() {
-                this.historyData = [];
-                this.init();
-            }
-
-            async init() {
-                await this.loadHistoryData();
-                this.renderHistory();
-            }
-
-            async loadHistoryData() {
-                try {
-                    const response = await fetch('/api/history/');
-                    if (response.ok) {
-                        const data = await response.json();
-                        this.historyData = data.history || [];
-                    } else {
-                        this.useMockData();
-                    }
-                } catch (error) {
-                    console.warn('加载历史数据失败，使用模拟数据:', error);
-                    this.useMockData();
-                }
-            }
-
-            useMockData() {
-                this.historyData = [
-                    {
-                        id: "2026-W4",
-                        week: "2026年1月第4周",
-                        date: "2026-01-24",
-                        total_projects: 10,
-                        projects: [
-                            { name: "huggingface/transformers", stars: 156000, language: "Python", trend: "stable" },
-                            { name: "ultralytics/yolov5", stars: 43200, language: "Python", trend: "rising" },
-                            { name: "langchain-ai/langchain", stars: 98700, language: "Python", trend: "rising" }
-                        ]
-                    },
-                    {
-                        id: "2026-W3",
-                        week: "2026年1月第3周",
-                        date: "2026-01-17",
-                        total_projects: 10,
-                        projects: [
-                            { name: "ashishps1/awesome-low-level-design", stars: 21500, language: "Java", trend: "rising" },
-                            { name: "apache/dolphinscheduler", stars: 12100, language: "Java", trend: "stable" },
-                            { name: "TeamNewPipe/NewPipe", stars: 28800, language: "Java", trend: "stable" }
-                        ]
-                    },
-                    {
-                        id: "2026-W2",
-                        week: "2026年1月第2周",
-                        date: "2026-01-10",
-                        total_projects: 10,
-                        projects: [
-                            { name: "PaddlePaddle/Paddle", stars: 34500, language: "Python", trend: "rising" },
-                            { name: "ComfyUI/ComfyUI", stars: 67800, language: "Python", trend: "rising" },
-                            { name: "gradio-app/gradio", stars: 34500, language: "Python", trend: "stable" }
-                        ]
-                    }
-                ];
-            }
-
-            formatNumber(num) {
-                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-                if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
-                return num.toString();
-            }
-
-            getTrendEmoji(trend) {
-                const icons = { 'rising': '↗️', 'falling': '↘️', 'steady': '➡️', 'stable': '✅' };
-                return icons[trend] || '•';
-            }
-
-            renderHistory() {
-                const container = document.getElementById('history-container');
-                if (!container) return;
-
-                if (!this.historyData || this.historyData.length === 0) {
-                    container.innerHTML = `
-                        <div class="no-history">
-                            <h3>📭 暂无历史记录</h3>
-                            <p>第一份报告将在本周五生成</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = '';
-
-                this.historyData.forEach((record, index) => {
-                    const section = document.createElement('div');
-                    section.className = 'history-section';
-                    section.style.animationDelay = `${index * 0.15}s`;
-                    
-                    const projects = record.projects || [];
-                    const displayDate = record.week || record.date;
-                    
-                    section.innerHTML = `
-                        <div class="history-header">
-                            <span class="history-date">📅 ${displayDate}</span>
-                            <a href="report.html?id=${record.id}" class="report-link">📄 查看完整报告</a>
-                        </div>
-                        
-                        <div class="summary-content">
-                            <h3>📊 本周亮点</h3>
-                            <ul>
-                                <li>收录了 ${record.total_projects || projects.length} 个热门开源项目</li>
-                                <li>涵盖 AI/机器学习、Web开发等多个领域</li>
-                                <li>每周持续更新，追踪技术前沿</li>
-                            </ul>
-                            
-                            <div class="stats-grid">
-                                <div class="stat-card">
-                                    <div class="stat-value">${record.total_projects || projects.length}</div>
-                                    <div class="stat-label">收录项目</div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-value">${this.formatNumber(projects.reduce((sum, p) => sum + (p.stars || 0), 0))}</div>
-                                    <div class="stat-label">总 Stars</div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-value">${this.getTopLanguage(projects)}</div>
-                                    <div class="stat-label">热门语言</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <h4 style="margin: 20px 0 15px 0;">🏆 本周 Top ${projects.slice(0, 5).length} 项目</h4>
-                        <div class="projects-preview">
-                            ${projects.slice(0, 5).map(project => `
-                                <div class="project-item">
-                                    <div class="project-name">${project.full_name || project.name}</div>
-                                    <div class="project-stats">
-                                        <span>⭐ ${this.formatNumber(project.stars || 0)}</span>
-                                        <span>🐍 ${project.language || '-'}</span>
-                                        <span>${this.getTrendEmoji(project.trend)}</span>
-                                    </div>
-                                    ${project.description ? `
-                                    <p style="color: #a0aec0; font-size: 0.85rem; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                        ${project.description}
-                                    </p>
-                                    ` : ''}
-                                    ${project.category ? `
-                                    <span class="language-tag ${this.getLanguageClass(project.language)}" style="margin-top: 8px; font-size: 0.75rem;">${project.category}</span>
-                                    ` : ''}
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-
-                    container.appendChild(section);
-                });
-            }
-
-            getTopLanguage(projects) {
-                const langs = {};
-                projects.forEach(p => {
-                    const lang = p.language || 'Other';
-                    langs[lang] = (langs[lang] || 0) + 1;
-                });
-                return Object.keys(langs).sort((a, b) => langs[b] - langs[a])[0] || '-';
-            }
-
-            getLanguageClass(language) {
-                const langMap = {
-                    'Java': 'java', 'Python': 'python', 'TypeScript': 'typescript',
-                    'JavaScript': 'javascript', 'Go': 'go', 'Rust': 'rust',
-                    'C++': 'cpp', 'C': 'c', 'Shell': 'other'
-                };
-                return langMap[language] || 'other';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.body.classList.add('loaded');
-            new HistoryManager();
-        });
-    </script>
+    <script src="./history.js"></script>
 </body>
 </html>

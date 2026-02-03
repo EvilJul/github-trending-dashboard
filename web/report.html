@@ -39,7 +39,6 @@
             margin: 0 auto;
         }
 
-        /* Header */
         header {
             text-align: center;
             padding: 30px 0;
@@ -50,6 +49,11 @@
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         h1 {
@@ -85,7 +89,6 @@
             transform: translateX(-5px);
         }
 
-        /* Navigation */
         .nav-bar {
             display: flex;
             justify-content: center;
@@ -93,11 +96,6 @@
             margin-bottom: 30px;
             animation: fadeIn 0.6s ease 0.2s forwards;
             opacity: 0;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .nav-btn {
@@ -122,7 +120,6 @@
             border-color: transparent;
         }
 
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -159,7 +156,6 @@
             margin-top: 5px;
         }
 
-        /* Section */
         .section {
             margin-bottom: 40px;
             animation: fadeInUp 0.6s ease forwards;
@@ -185,7 +181,6 @@
             color: #667eea;
         }
 
-        /* Project Cards */
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -234,20 +229,9 @@
             font-weight: 600;
         }
 
-        .trend-badge.rising {
-            background: rgba(72, 187, 120, 0.2);
-            color: #48bb78;
-        }
-
-        .trend-badge.falling {
-            background: rgba(245, 101, 101, 0.2);
-            color: #f56565;
-        }
-
-        .trend-badge.stable, .trend-badge.steady {
-            background: rgba(49, 130, 206, 0.2);
-            color: #3182ce;
-        }
+        .trend-badge.rising { background: rgba(72, 187, 120, 0.2); color: #48bb78; }
+        .trend-badge.falling { background: rgba(245, 101, 101, 0.2); color: #f56565; }
+        .trend-badge.stable, .trend-badge.steady { background: rgba(49, 130, 206, 0.2); color: #3182ce; }
 
         .project-description {
             color: #cbd5e0;
@@ -285,6 +269,7 @@
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 500;
+            margin-top: 10px;
         }
 
         .language-tag.java { background: rgba(198, 120, 66, 0.2); color: #e6915a; }
@@ -339,7 +324,6 @@
             margin-top: 10px;
         }
 
-        /* Loading */
         .loading-container {
             text-align: center;
             padding: 60px 20px;
@@ -365,7 +349,6 @@
             color: #f56565;
         }
 
-        /* Footer */
         .footer-info {
             text-align: center;
             padding: 30px;
@@ -432,60 +415,27 @@
             }
 
             async init() {
+                if (!this.reportId) {
+                    this.showError('缺少报告ID');
+                    return;
+                }
                 await this.loadReportData();
                 this.renderReport();
             }
 
             async loadReportData() {
-                if (!this.reportId) {
-                    this.showError('缺少报告ID');
-                    return;
-                }
-
                 try {
-                    // 先尝试从当前历史记录列表中查找
-                    const historyResponse = await fetch('/api/history/');
-                    if (historyResponse.ok) {
-                        const historyData = await historyResponse.json();
-                        const history = historyData.history || [];
+                    const response = await fetch('/api/history/');
+                    if (response.ok) {
+                        const data = await response.json();
+                        const history = data.history || [];
                         
                         // 查找匹配的记录
                         const record = history.find(h => h.id === this.reportId);
                         if (record) {
                             this.reportData = record;
                             document.getElementById('report-subtitle').textContent = 
-                                this.reportData.week || `报告 #${this.reportId}`;
-                            return;
-                        }
-                    }
-                    
-                    // 如果没找到，尝试直接调用 API
-                    const response = await fetch(`/api/history/${this.reportId}`);
-                    if (response.ok) {
-                        this.reportData = await response.json();
-                        document.getElementById('report-subtitle').textContent = 
-                            this.reportData.week || `报告 #${this.reportId}`;
-                    } else {
-                        this.showError('报告不存在或已被删除');
-                    }
-                } catch (error) {
-                    console.warn('加载报告数据失败:', error);
-                    this.showError('加载失败: ' + error.message);
-                }
-            }
-
-            async loadFromHistoryList() {
-                try {
-                    const response = await fetch('/api/history/');
-                    if (response.ok) {
-                        const data = await response.json();
-                        const history = data.history || [];
-                        const record = history.find(h => h.id === this.reportId);
-                        
-                        if (record) {
-                            this.reportData = record;
-                            // 尝试获取完整项目详情
-                            await this.enrichProjectsWithDetails();
+                                record.week || `报告 #${this.reportId}`;
                         } else {
                             this.showError('报告不存在');
                         }
@@ -493,48 +443,8 @@
                         this.showError('无法加载历史记录');
                     }
                 } catch (error) {
+                    console.warn('加载报告数据失败:', error);
                     this.showError('加载失败: ' + error.message);
-                }
-            }
-
-            async enrichProjectsWithDetails() {
-                // 获取完整项目列表，从projects.json中匹配详细信息
-                try {
-                    const response = await fetch('/api/projects/');
-                    if (response.ok) {
-                        const data = await response.json();
-                        const projects = data.projects || [];
-                        
-                        // 创建项目详情映射
-                        const projectMap = {};
-                        projects.forEach(p => {
-                            projectMap[p.full_name] = p;
-                            projectMap[p.name] = p;
-                        });
-
-                        // 为历史记录中的项目补充详情
-                        if (this.reportData.projects && Array.isArray(this.reportData.projects)) {
-                            this.reportData.projects = this.reportData.projects.map(name => {
-                                // 如果已经是对象（完整详情），直接返回
-                                if (typeof name === 'object') return name;
-                                
-                                // 否则尝试查找详情
-                                const detail = projectMap[name] || projectMap[name.split('/')[1]];
-                                return detail || { 
-                                    name: name, 
-                                    full_name: name,
-                                    description: '暂无描述',
-                                    stars: 0,
-                                    forks: 0,
-                                    language: 'Other',
-                                    category: '未知分类',
-                                    usage_steps: ['请访问项目页面查看详情']
-                                };
-                            });
-                        }
-                    }
-                } catch (error) {
-                    console.warn('无法获取项目详情:', error);
                 }
             }
 
@@ -573,7 +483,6 @@
                 const container = document.getElementById('report-container');
                 
                 if (!this.reportData) {
-                    this.showError('报告数据为空');
                     return;
                 }
 
@@ -582,12 +491,10 @@
                 
                 document.getElementById('report-date').textContent = date;
 
-                // 计算统计数据
                 const totalStars = projects.reduce((sum, p) => sum + (p.stars || 0), 0);
                 const totalForks = projects.reduce((sum, p) => sum + (p.forks || 0), 0);
                 const topProject = projects.sort((a, b) => (b.stars || 0) - (a.stars || 0))[0];
 
-                // 语言分布
                 const langCount = {};
                 projects.forEach(p => {
                     const lang = p.language || 'Other';
@@ -595,7 +502,6 @@
                 });
 
                 container.innerHTML = `
-                    <!-- 统计卡片 -->
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-value">${projects.length}</div>
@@ -615,7 +521,6 @@
                         </div>
                     </div>
 
-                    <!-- 亮点项目 -->
                     ${topProject ? `
                     <div class="section" style="animation-delay: 0.1s;">
                         <div class="section-header">
@@ -623,7 +528,7 @@
                         </div>
                         <div class="project-card" style="border-color: #667eea;">
                             <div class="card-header">
-                                <a href="${topProject.url || '#'}" target="_blank" class="project-name">
+                                <a href="project.html?project=${encodeURIComponent((topProject.full_name || topProject.name || '').split('/')[1])}" class="project-name">
                                     ${topProject.full_name || topProject.name}
                                 </a>
                                 ${this.getTrendBadge(topProject.trend)}
@@ -649,48 +554,51 @@
                     </div>
                     ` : ''}
 
-                    <!-- 全部项目列表 -->
                     <div class="section" style="animation-delay: 0.2s;">
                         <div class="section-header">
                             <h2 class="section-title">📦 全部项目 (${projects.length})</h2>
                         </div>
                         <div class="projects-grid">
-                            ${projects.map((project, index) => `
-                                <div class="project-card" style="animation-delay: ${index * 0.05}s;">
-                                    <div class="card-header">
-                                        <a href="project.html?project=${encodeURIComponent(project.name)}" class="project-name">
-                                            ${project.full_name || project.name}
-                                        </a>
-                                        ${this.getTrendBadge(project.trend)}
-                                    </div>
-                                    <p class="project-description">${project.description || '暂无描述'}</p>
-                                    <div class="project-meta">
-                                        <div class="meta-item">
-                                            <span>⭐</span>
-                                            <span class="meta-value">${this.formatNumber(project.stars)}</span>
+                            ${projects.map((project, index) => {
+                                const name = project.full_name || project.name || '未知项目';
+                                const shortName = name.split('/')[1] || name;
+                                return `
+                                    <div class="project-card" style="animation-delay: ${index * 0.05}s;">
+                                        <div class="card-header">
+                                            <a href="project.html?project=${encodeURIComponent(shortName)}" class="project-name">
+                                                ${name}
+                                            </a>
+                                            ${this.getTrendBadge(project.trend)}
                                         </div>
-                                        <div class="meta-item">
-                                            <span>🍴</span>
-                                            <span class="meta-value">${this.formatNumber(project.forks)}</span>
+                                        <p class="project-description">${project.description || '暂无描述'}</p>
+                                        <div class="project-meta">
+                                            <div class="meta-item">
+                                                <span>⭐</span>
+                                                <span class="meta-value">${this.formatNumber(project.stars)}</span>
+                                            </div>
+                                            <div class="meta-item">
+                                                <span>🍴</span>
+                                                <span class="meta-value">${this.formatNumber(project.forks)}</span>
+                                            </div>
+                                            <div class="meta-item">
+                                                <span>🐍</span>
+                                                <span class="meta-value">${project.language || 'Other'}</span>
+                                            </div>
                                         </div>
-                                        <div class="meta-item">
-                                            <span>🐍</span>
-                                            <span class="meta-value">${project.language || 'Other'}</span>
+                                        <span class="language-tag ${this.getLanguageClass(project.language)}">${project.language || 'Other'}</span>
+                                        <span class="category-tag">${project.category || '通用工具'}</span>
+                                        
+                                        ${project.usage_steps && project.usage_steps.length > 0 ? `
+                                        <div class="usage-steps">
+                                            <h4>🔧 使用指南</h4>
+                                            <ul class="steps-list">
+                                                ${project.usage_steps.slice(0, 3).map(step => `<li>${step}</li>`).join('')}
+                                            </ul>
                                         </div>
+                                        ` : ''}
                                     </div>
-                                    <span class="language-tag ${this.getLanguageClass(project.language)}">${project.language || 'Other'}</span>
-                                    <span class="category-tag">${project.category || '通用工具'}</span>
-                                    
-                                    ${project.usage_steps && project.usage_steps.length > 0 ? `
-                                    <div class="usage-steps">
-                                        <h4>🔧 使用指南</h4>
-                                        <ul class="steps-list">
-                                            ${project.usage_steps.slice(0, 3).map(step => `<li>${step}</li>`).join('')}
-                                        </ul>
-                                    </div>
-                                    ` : ''}
-                                </div>
-                            `).join('')}
+                                `;
+                            }).join('')}
                         </div>
                     </div>
                 `;
