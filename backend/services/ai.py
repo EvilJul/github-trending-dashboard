@@ -32,6 +32,10 @@ class AIService:
             "anthropic": {
                 "endpoint": "https://api.anthropic.com/v1",
                 "default_model": "claude-3-sonnet-20241022"
+            },
+            "siliconflow": {
+                "endpoint": "https://api.siliconflow.cn/v1",
+                "default_model": "deepseek-ai/DeepSeek-V2.5"
             }
         }
         
@@ -88,8 +92,13 @@ Forks: {project.forks}
         async with httpx.AsyncClient(timeout=60.0) as client:
             headers = {
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}"
             }
+            
+            # SiliconFlow 需要额外的 headers
+            if "siliconflow" in self.endpoint.lower():
+                headers["Authorization"] = f"Bearer {self.api_key}"
+            else:
+                headers["Authorization"] = f"Bearer {self.api_key}"
             
             data = {
                 "model": self.model,
@@ -97,7 +106,8 @@ Forks: {project.forks}
                     {"role": "system", "content": "你是一个开源项目分析助手，请用中文回复。"},
                     {"role": "user", "content": prompt}
                 ],
-                "temperature": 0.7
+                "temperature": 0.7,
+                "max_tokens": 2000
             }
             
             response = await client.post(
@@ -110,7 +120,7 @@ Forks: {project.forks}
                 result = response.json()
                 return result["choices"][0]["message"]["content"]
             else:
-                print(f"AI API 错误: {response.status_code}")
+                print(f"AI API 错误: {response.status_code} - {response.text[:200]}")
                 return None
 
     def _parse_response(self, response: str, original: ProjectCreate) -> ProjectCreate:
