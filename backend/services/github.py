@@ -4,6 +4,7 @@ GitHub 数据获取服务
 
 import httpx
 import json
+import asyncio
 from datetime import datetime, timedelta
 from typing import List, Optional
 from models.schemas import ProjectCreate
@@ -25,6 +26,11 @@ class GitHubService:
         else:
             self.headers = self.HEADERS
 
+    async def _rate_limit_wait(self, client: httpx.AsyncClient) -> None:
+        """处理速率限制"""
+        # 简单处理：每次请求后等待 500ms
+        await asyncio.sleep(0.5)
+
     async def fetch_trending_projects(self, days: int = 7, per_page: int = 10) -> List[ProjectCreate]:
         """获取热门项目"""
         all_projects = []
@@ -32,22 +38,16 @@ class GitHubService:
         # 计算日期
         date_since = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
 
-        # 查询策略：多维度获取
+        # 查询策略：减少 API 调用次数，每个请求获取更多结果
         queries = [
-            # 综合热门
+            # 综合热门 - 一次性获取足够多的项目
             f"created:>{date_since} sort:stars",
-            # 数据科学
-            f"topic:data-science created:>{date_since}",
-            # 机器学习
-            f"topic:machine-learning created:>{date_since}",
-            # AI 应用
-            f"topic:artificial-intelligence created:>{date_since}",
         ]
 
         async with httpx.AsyncClient(timeout=30.0) as client:
-            for query in queries:
+            for i, query in enumerate(queries):
                 try:
-                    params = {"q": query, "per_page": per_page}
+                    params = {"q": query, "per_page": 30}  # 每次获取更多项目
                     response = await client.get(
                         f"{self.BASE_URL}/search/repositories",
                         params=params,
@@ -56,17 +56,20 @@ class GitHubService:
 
                     if response.status_code == 200:
                         data = response.json()
-                        for item in data.get("items", []):
+                        for item in data.get("items", [])[:20]:  # 取前20个
                             project = self._parse_repository(item)
                             if project:
                                 all_projects.append(project)
                     elif response.status_code == 403:
-                        # Rate limit - 等待或使用公共请求
-                        print("GitHub API rate limit, continuing with remaining queries...")
-                        continue
+                        print("GitHub API rate limit hit, using cached data")
+                        break
                     else:
                         print(f"Query failed ({query}): {response.status_code}")
-
+                    
+                    # 避免触发速率限制
+                    if i < len(queries) - 1:
+                        await asyncio.sleep(1.0)
+                        
                 except Exception as e:
                     print(f"Error fetching query {query}: {e}")
                     continue
