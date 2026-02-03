@@ -88,8 +88,10 @@ async def root():
     return FileResponse(os.path.join(WEB_DIR, "index.html"))
 
 
+# SPA 路由必须放在最后
 @app.get("/{path:path}")
 async def serve_spa(request: Request, path: str):
+    # API 路径不应该到达这里
     if path.startswith("api/"):
         return JSONResponse(
             status_code=404,
