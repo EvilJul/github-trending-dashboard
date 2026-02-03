@@ -46,8 +46,9 @@ class GitHubService:
 
     def _load_token_from_config(self) -> Optional[str]:
         try:
+            # 配置文件在项目根目录
             config_file = os.path.join(
-                os.path.dirname(os.path.dirname(__file__)), 
+                os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
                 "config.json"
             )
             if os.path.exists(config_file):
