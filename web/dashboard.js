@@ -586,14 +586,21 @@ class GitHubTrendingDashboard {
     }
 
     showNotification(message) {
+        // 移除现有的通知
+        const existing = document.querySelector('.notification');
+        if (existing) existing.remove();
+        
         const notification = document.createElement('div');
-        notification.className = 'notification';
-        notification.textContent = message;
+        notification.className = 'notification show';
+        notification.innerHTML = `<span style="font-size:1.2em">${message}</span>`;
         document.body.appendChild(notification);
+        
+        // 10秒后开始消失
         setTimeout(() => {
-            notification.classList.add('notification-hide');
-            setTimeout(() => notification.remove(), 300);
-        }, 5000);  // 显示5秒
+            notification.classList.remove('show');
+            notification.classList.add('hide');
+            setTimeout(() => notification.remove(), 500);
+        }, 10000);  // 显示10秒
     }
 
     renderProjects() {

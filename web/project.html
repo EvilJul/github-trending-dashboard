@@ -604,15 +604,20 @@
                     // 获取 README
                     if (this.projectData && this.projectData.full_name) {
                         try {
-                            // 使用 full_name 获取 README
-                            const readmeResponse = await fetch(`/api/projects/${encodeURIComponent(this.projectData.full_name)}/readme`);
-                            if (readmeResponse.ok) {
-                                const readmeData = await readmeResponse.json();
+                            const readmeUrl = `/api/projects/${encodeURIComponent(this.projectData.full_name)}/readme`;
+                            console.log('获取 README:', readmeUrl);
+                            const readmeResponse = await fetch(readmeUrl);
+                            const readmeData = await readmeResponse.json();
+                            
+                            if (readmeData.has_readme && readmeData.readme) {
                                 this.readmeContent = readmeData.readme;
                                 console.log('README加载成功');
-                            } else if (readmeResponse.status === 404) {
+                            } else if (readmeData.error) {
+                                console.warn('README获取错误:', readmeData.error);
                                 this.readmeContent = null;
+                            } else {
                                 console.log('该项目无 README');
+                                this.readmeContent = null;
                             }
                         } catch (e) {
                             console.warn('README加载失败:', e);

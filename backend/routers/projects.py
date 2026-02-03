@@ -213,6 +213,10 @@ async def get_project_readme(project_name: str):
     获取项目 README 内容
     """
     try:
+        # URL 解码 project_name
+        from urllib.parse import unquote
+        project_name = unquote(project_name)
+        
         logger.info(f"获取 README: {project_name}")
         
         # 从本地数据中查找项目
@@ -220,13 +224,21 @@ async def get_project_readme(project_name: str):
         project = None
         
         for p in projects:
+            # 支持 name 和 full_name 两种格式
             if p.name == project_name or p.full_name == project_name:
                 project = p
                 break
         
         if not project:
             logger.warning(f"项目不存在: {project_name}")
-            raise HTTPException(status_code=404, detail=f"Project {project_name} not found")
+            # 返回空内容而不是 404 错误
+            return {
+                "project": project_name,
+                "full_name": project_name,
+                "readme": None,
+                "has_readme": False,
+                "error": "项目不存在"
+            }
         
         full_name = project.full_name
         logger.info(f"获取 README: {full_name}")
@@ -249,11 +261,15 @@ async def get_project_readme(project_name: str):
             "readme": readme_content,
             "has_readme": True
         }
-    except HTTPException:
-        raise
     except Exception as e:
         logger.error(f"获取 README 失败: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        return {
+            "project": project_name,
+            "full_name": project_name,
+            "readme": None,
+            "has_readme": False,
+            "error": str(e)
+        }
 
 
 @router.get("/{project_name}", response_model=ProjectResponse)
