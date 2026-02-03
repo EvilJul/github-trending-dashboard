@@ -976,20 +976,24 @@
                             <option value="minimax">MiniMax</option>
                             <option value="openai">OpenAI</option>
                             <option value="anthropic">Anthropic Claude</option>
+                            <option value="custom">其他 (自定义)</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="api-model">模型选择</label>
-                        <select id="api-model" name="model">
-                            <option value="">自动选择</option>
-                            <option value="qwen-plus">qwen-plus (推荐)</option>
-                            <option value="qwen-turbo">qwen-turbo</option>
-                            <option value="qwen-max">qwen-max</option>
-                        </select>
+                        <label for="api-model">模型名称</label>
+                        <input type="text" id="api-model" name="model" placeholder="例如: gpt-4, claude-3-sonnet, qwen-plus">
+                        <small style="color: #a0aec0; font-size: 0.8rem; margin-top: 5px; display: block;">
+                            请输入完整的模型名称，如 gpt-4、qwen-plus、claude-3-sonnet-20241022
+                        </small>
                     </div>
-                    <div class="form-group">
-                        <label for="api-endpoint">API 端点</label>
-                        <input type="text" id="api-endpoint" name="endpoint" placeholder="留空则使用默认端点">
+                    <div class="form-group" id="custom-endpoint-group" style="display: none;">
+                        <label for="api-endpoint">API 端点 (自定义)</label>
+                        <input type="text" id="api-endpoint" name="endpoint" placeholder="https://api.example.com/v1">
+                    </div>
+                    <div class="form-group" id="default-endpoint-hint" style="display: block;">
+                        <small style="color: #a0aec0; font-size: 0.85rem;">
+                            端点留空将使用提供商的默认端点
+                        </small>
                     </div>
                     <div class="form-group">
                         <label for="api-key">API Key</label>

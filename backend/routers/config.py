@@ -80,12 +80,16 @@ async def test_ai_config(config: AIConfig):
     from services.ai import AIService
     
     try:
-        # 创建 AI 服务
+        # 创建 AI 服务（传递 model）
         ai_service = AIService(
             provider=config.provider,
+            model=config.model,
             api_key=config.api_key,
             endpoint=config.endpoint
         )
+        
+        # 确定使用的模型
+        used_model = config.model or ai_service.model
         
         # 简单测试：调用模型获取响应
         test_prompt = "你好，请回复 '测试成功'"
@@ -97,7 +101,7 @@ async def test_ai_config(config: AIConfig):
                 "success": True,
                 "message": "API 配置测试成功！",
                 "provider": config.provider,
-                "model": config.model or ai_service.model
+                "model": used_model
             }
         else:
             return {
@@ -129,15 +133,17 @@ async def save_ai_config(config: AIConfig):
             if not config.api_key:
                 raise HTTPException(status_code=400, detail="API Key 不能为空")
         
-        # 确定模型
+        # 确定模型（优先使用用户指定的模型）
         from services.ai import AIService
         ai_service = AIService(
             provider=config.provider,
+            model=config.model,
             api_key=config.api_key,
             endpoint=config.endpoint
         )
         
-        model = config.model or ai_service.model
+        # 如果用户指定了模型，使用用户指定的；否则使用服务默认值
+        model = config.model if config.model else ai_service.model
         
         # 保存配置
         save_config({

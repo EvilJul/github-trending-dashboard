@@ -298,16 +298,25 @@ backend/
 
 支持多种 AI 服务提供商：
 
-| 提供商 | 模型 | 端点 |
-|--------|------|------|
-| 通义千问 (qwen) | qwen-plus | https://dashscope.aliyuncs.com/compatible-mode/v1 |
-| MiniMax | MiniMax-M2.1 | https://api.minimax.chat/v1 |
-| OpenAI | gpt-4 | https://api.openai.com/v1 |
-| Anthropic | claude-3-sonnet | https://api.anthropic.com/v1 |
+| 提供商 | Provider 值 | 推荐模型 | 默认端点 |
+|--------|-------------|----------|----------|
+| 通义千问 (Qwen) | `qwen` | qwen-plus | https://dashscope.aliyuncs.com/compatible-mode/v1 |
+| MiniMax | `minimax` | MiniMax-M2.1 | https://api.minimax.chat/v1 |
+| OpenAI | `openai` | gpt-4 / gpt-4o | https://api.openai.com/v1 |
+| Anthropic Claude | `anthropic` | claude-3-sonnet-20241022 | https://api.anthropic.com/v1 |
+| 自定义 | `custom` | 任意模型 | 手动输入 |
+
+### 模型配置说明
+
+- **内置提供商**：可手动输入自定义模型名称（如使用 gpt-4o-mini）
+- **自定义提供商**：需手动输入完整的模型名称和 API 端点
 
 ### AI 增强示例
 
 ```bash
 # 使用通义千问增强数据
-curl -X POST "http://localhost:8001/api/projects/refresh-ai?provider=qwen&api_key=YOUR_API_KEY"
+curl -X POST "http://localhost:8001/api/projects/refresh-ai?provider=qwen&model=qwen-plus&api_key=YOUR_API_KEY"
+
+# 使用自定义模型
+curl -X POST "http://localhost:8001/api/projects/refresh-ai?provider=custom&model=gpt-4&endpoint=https://api.example.com/v1&api_key=YOUR_API_KEY"
 ```

@@ -306,17 +306,20 @@ class GitHubTrendingDashboard {
                 const config = await response.json();
                 
                 const providerSelect = document.getElementById('api-provider');
-                const modelSelect = document.getElementById('api-model');
+                const modelInput = document.getElementById('api-model');
                 const endpointInput = document.getElementById('api-endpoint');
                 const apiKeyInput = document.getElementById('api-key');
                 
                 if (providerSelect) providerSelect.value = config.provider || 'qwen';
-                if (modelSelect) modelSelect.value = config.model || '';
+                if (modelInput) modelInput.value = config.model || '';
                 if (endpointInput) endpointInput.value = config.endpoint || '';
                 if (apiKeyInput) {
                     // 如果之前配置过 API key，显示占位符
                     apiKeyInput.value = config.has_api_key ? '••••••••••••••••' : '';
                 }
+                
+                // 更新端点输入框显示
+                this.updateEndpointVisibility(config.provider);
                 
                 // 如果有 API key，允许测试和保存
                 const saveBtn = document.getElementById('save-config');
@@ -329,6 +332,19 @@ class GitHubTrendingDashboard {
         }
     }
 
+    updateEndpointVisibility(provider) {
+        const customGroup = document.getElementById('custom-endpoint-group');
+        const defaultHint = document.getElementById('default-endpoint-hint');
+        
+        if (provider === 'custom') {
+            if (customGroup) customGroup.style.display = 'block';
+            if (defaultHint) defaultHint.style.display = 'none';
+        } else {
+            if (customGroup) customGroup.style.display = 'none';
+            if (defaultHint) defaultHint.style.display = 'block';
+        }
+    }
+
     setupApiConfigModal() {
         const modal = document.getElementById('api-config-modal');
         if (!modal) return;
@@ -337,6 +353,7 @@ class GitHubTrendingDashboard {
         const cancelBtn = document.getElementById('cancel-config');
         const saveBtn = document.getElementById('save-config');
         const testBtn = document.getElementById('test-config');
+        const providerSelect = document.getElementById('api-provider');
         
         const closeModal = () => {
             modal.classList.remove('modal-show');
@@ -351,6 +368,13 @@ class GitHubTrendingDashboard {
         window.onclick = (event) => {
             if (event.target === modal) closeModal();
         };
+
+        // 提供商变更时更新 UI
+        if (providerSelect) {
+            providerSelect.addEventListener('change', (e) => {
+                this.updateEndpointVisibility(e.target.value);
+            });
+        }
 
         // 测试连接按钮
         if (testBtn) {

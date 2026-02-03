@@ -11,27 +11,39 @@ from models.schemas import ProjectCreate
 class AIService:
     """AI 增强服务"""
 
-    def __init__(self, provider: str = "qwen", api_key: str = "", endpoint: str = ""):
+    def __init__(self, provider: str = "qwen", model: str = "", api_key: str = "", endpoint: str = ""):
         self.provider = provider
         self.api_key = api_key
-        self.endpoint = endpoint
         
-        # 配置不同 provider 的端点
-        if provider == "qwen":
-            self.endpoint = endpoint or "https://dashscope.aliyuncs.com/compatible-mode/v1"
-            self.model = "qwen-plus"
-        elif provider == "minimax":
-            self.endpoint = endpoint or "https://api.minimax.chat/v1"
-            self.model = "MiniMax-M2.1"
-        elif provider == "openai":
-            self.endpoint = endpoint or "https://api.openai.com/v1"
-            self.model = "gpt-4"
-        elif provider == "anthropic":
-            self.endpoint = endpoint or "https://api.anthropic.com/v1"
-            self.model = "claude-3-sonnet-20241022"
+        # 配置不同 provider 的默认端点和模型
+        provider_configs = {
+            "qwen": {
+                "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                "default_model": "qwen-plus"
+            },
+            "minimax": {
+                "endpoint": "https://api.minimax.chat/v1",
+                "default_model": "MiniMax-M2.1"
+            },
+            "openai": {
+                "endpoint": "https://api.openai.com/v1",
+                "default_model": "gpt-4"
+            },
+            "anthropic": {
+                "endpoint": "https://api.anthropic.com/v1",
+                "default_model": "claude-3-sonnet-20241022"
+            }
+        }
+        
+        if provider in provider_configs:
+            config = provider_configs[provider]
+            self.endpoint = endpoint or config["endpoint"]
+            # 如果用户指定了模型，使用用户指定的；否则使用默认模型
+            self.model = model or config["default_model"]
         else:
-            self.endpoint = endpoint or "https://api.example.com/v1"
-            self.model = "default"
+            # 自定义提供商
+            self.endpoint = endpoint or ""
+            self.model = model or "default"
 
     async def enhance_project(self, project: ProjectCreate) -> ProjectCreate:
         """使用 AI 增强项目数据"""
