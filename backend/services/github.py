@@ -3,6 +3,7 @@ GitHub 数据获取服务
 """
 
 import logging
+import os
 import httpx
 import json
 import asyncio
