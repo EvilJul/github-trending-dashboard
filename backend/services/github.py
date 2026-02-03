@@ -67,18 +67,18 @@ class GitHubService:
     async def fetch_trending_projects(self, days: int = 7, per_page: int = 10) -> List[ProjectCreate]:
         """获取热门项目"""
         all_projects = []
-        date_since = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
         
-        logger.info(f"获取 GitHub Trending 项目 (since: {date_since})")
+        # GitHub Trending 查询：按星标排序，不限制创建时间
+        logger.info(f"获取 GitHub Trending 项目")
 
         queries = [
-            f"created:>{date_since} sort:stars",
+            "sort:stars stars:>1000",  # 星标>1000，按星标排序
         ]
 
         async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
             for i, query in enumerate(queries):
                 try:
-                    params = {"q": query, "per_page": 30}
+                    params = {"q": query, "per_page": 50, "sort": "stars"}
                     response = await client.get(
                         f"{self.BASE_URL}/search/repositories",
                         params=params,
