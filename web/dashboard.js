@@ -209,14 +209,6 @@ class GitHubTrendingDashboard {
         const aiBtn = document.getElementById('ai-generate-btn');
         if (!aiBtn || this.isLoading) return;
         
-        // 获取用户配置的 API 信息
-        const apiConfig = this.apiConfig || this.loadApiConfig();
-        
-        if (!apiConfig || !apiConfig.apiKey) {
-            this.showNotification('❌ 请先配置 API Key（点击"API配置"按钮）');
-            return;
-        }
-        
         const originalText = aiBtn.innerHTML;
         aiBtn.innerHTML = '<span class="loading-spinner-small"></span> AI 分析中...';
         aiBtn.disabled = true;
@@ -224,11 +216,44 @@ class GitHubTrendingDashboard {
         try {
             this.showLoading();
             
+            // 从后端获取已保存的配置
+            const configResponse = await fetch('/api/config/ai');
+            if (!configResponse.ok) {
+                throw new Error('请先配置 API Key');
+            }
+            
+            const config = await configResponse.json();
+            
+            if (!config.has_api_key) {
+                throw new Error('请先配置 API Key（点击"API配置"按钮）');
+            }
+            
+            // 获取完整的 API key
+            const fullConfig = this.apiConfig || this.loadApiConfig();
+            if (!fullConfig?.apiKey) {
+                // 从后端获取（后端会返回已保存的 key）
+                const saveResponse = await fetch('/api/config/ai/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        provider: config.provider,
+                        model: config.model,
+                        endpoint: config.endpoint,
+                        api_key: ''  // 后端会使用已保存的 key
+                    })
+                });
+                const saveResult = await saveResponse.json();
+                if (!saveResult.success || !saveResult.api_key) {
+                    throw new Error('请先配置 API Key');
+                }
+                fullConfig.apiKey = saveResult.api_key;
+            }
+            
             // 构建 URL 参数
             const params = new URLSearchParams({
-                provider: apiConfig.provider || 'qwen',
-                api_key: apiConfig.apiKey,
-                endpoint: apiConfig.endpoint || ''
+                provider: config.provider || 'qwen',
+                api_key: fullConfig.apiKey,
+                endpoint: config.endpoint || ''
             });
             
             const response = await fetch(`/api/projects/refresh-ai?${params}`, { 
@@ -247,7 +272,7 @@ class GitHubTrendingDashboard {
         } catch (error) {
             console.error('AI 刷新失败:', error);
             this.hideLoading();
-            this.showNotification(`❌ AI 刷新失败: ${error.message}`);
+            this.showNotification(`❌ ${error.message}`);
         } finally {
             aiBtn.innerHTML = originalText;
             aiBtn.disabled = false;
@@ -258,18 +283,50 @@ class GitHubTrendingDashboard {
         const modal = document.getElementById('api-config-modal');
         if (!modal) return;
         
-        const providerSelect = document.getElementById('api-provider');
-        const apiKeyInput = document.getElementById('api-key');
-        const endpointInput = document.getElementById('api-endpoint');
-
-        if (this.apiConfig) {
-            if (providerSelect) providerSelect.value = this.apiConfig.provider || 'qwen';
-            if (apiKeyInput) apiKeyInput.value = this.apiConfig.apiKey || '';
-            if (endpointInput) endpointInput.value = this.apiConfig.endpoint || '';
+        // 重置状态
+        const testResult = document.getElementById('test-result');
+        const saveBtn = document.getElementById('save-config');
+        if (testResult) {
+            testResult.className = 'test-result';
+            testResult.textContent = '';
         }
-
+        if (saveBtn) saveBtn.disabled = true;
+        
+        // 从后端加载配置
+        this.loadConfigFromBackend();
+        
         modal.style.display = 'block';
         modal.classList.add('modal-show');
+    }
+
+    async loadConfigFromBackend() {
+        try {
+            const response = await fetch('/api/config/ai');
+            if (response.ok) {
+                const config = await response.json();
+                
+                const providerSelect = document.getElementById('api-provider');
+                const modelSelect = document.getElementById('api-model');
+                const endpointInput = document.getElementById('api-endpoint');
+                const apiKeyInput = document.getElementById('api-key');
+                
+                if (providerSelect) providerSelect.value = config.provider || 'qwen';
+                if (modelSelect) modelSelect.value = config.model || '';
+                if (endpointInput) endpointInput.value = config.endpoint || '';
+                if (apiKeyInput) {
+                    // 如果之前配置过 API key，显示占位符
+                    apiKeyInput.value = config.has_api_key ? '••••••••••••••••' : '';
+                }
+                
+                // 如果有 API key，允许测试和保存
+                const saveBtn = document.getElementById('save-config');
+                if (saveBtn && config.has_api_key) {
+                    saveBtn.disabled = false;
+                }
+            }
+        } catch (error) {
+            console.error('加载配置失败:', error);
+        }
     }
 
     setupApiConfigModal() {
@@ -279,7 +336,8 @@ class GitHubTrendingDashboard {
         const closeBtn = modal.querySelector('.close');
         const cancelBtn = document.getElementById('cancel-config');
         const saveBtn = document.getElementById('save-config');
-
+        const testBtn = document.getElementById('test-config');
+        
         const closeModal = () => {
             modal.classList.remove('modal-show');
             setTimeout(() => {
@@ -294,21 +352,134 @@ class GitHubTrendingDashboard {
             if (event.target === modal) closeModal();
         };
 
-        if (saveBtn) {
-            saveBtn.onclick = () => {
-                const provider = document.getElementById('api-provider')?.value;
-                const apiKey = document.getElementById('api-key')?.value;
-                const endpoint = document.getElementById('api-endpoint')?.value;
+        // 测试连接按钮
+        if (testBtn) {
+            testBtn.onclick = () => this.testApiConfig();
+        }
 
-                this.apiConfig = { provider, apiKey, endpoint };
-                this.saveApiConfig(this.apiConfig);
+        // 保存配置按钮
+        if (saveBtn) {
+            saveBtn.onclick = () => this.saveConfigToBackend(closeModal);
+        }
+
+        // 监听输入变化，重置测试状态
+        ['api-provider', 'api-model', 'api-endpoint', 'api-key'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', () => {
+                    const saveBtn = document.getElementById('save-config');
+                    if (saveBtn) saveBtn.disabled = true;
+                    const testResult = document.getElementById('test-result');
+                    if (testResult) {
+                        testResult.className = 'test-result';
+                        testResult.textContent = '';
+                    }
+                });
+            }
+        });
+    }
+
+    async testApiConfig() {
+        const testResult = document.getElementById('test-result');
+        const saveBtn = document.getElementById('save-config');
+        const testBtn = document.getElementById('test-config');
+        
+        const provider = document.getElementById('api-provider')?.value;
+        const model = document.getElementById('api-model')?.value;
+        const endpoint = document.getElementById('api-endpoint')?.value;
+        const apiKey = document.getElementById('api-key')?.value;
+        
+        if (!apiKey || apiKey === '••••••••••••••••') {
+            if (testResult) {
+                testResult.className = 'test-result error';
+                testResult.textContent = '请输入 API Key';
+            }
+            return;
+        }
+        
+        // 显示测试中状态
+        if (testResult) {
+            testResult.className = 'test-result loading';
+            testResult.textContent = '正在测试连接...';
+        }
+        if (testBtn) testBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/api/config/ai/test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ provider, model, endpoint, api_key: apiKey })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                if (testResult) {
+                    testResult.className = 'test-result success';
+                    testResult.textContent = `✅ ${result.message} (模型: ${result.model})`;
+                }
+                if (saveBtn) saveBtn.disabled = false;
+            } else {
+                if (testResult) {
+                    testResult.className = 'test-result error';
+                    testResult.textContent = `❌ ${result.message}`;
+                }
+                if (saveBtn) saveBtn.disabled = true;
+            }
+        } catch (error) {
+            if (testResult) {
+                testResult.className = 'test-result error';
+                testResult.textContent = `❌ 测试失败: ${error.message}`;
+            }
+        } finally {
+            if (testBtn) testBtn.disabled = false;
+        }
+    }
+
+    async saveConfigToBackend(closeModal) {
+        const saveBtn = document.getElementById('save-config');
+        
+        const provider = document.getElementById('api-provider')?.value;
+        const model = document.getElementById('api-model')?.value;
+        const endpoint = document.getElementById('api-endpoint')?.value;
+        let apiKey = document.getElementById('api-key')?.value;
+        
+        // 如果显示占位符，保留原有的 key
+        if (apiKey === '••••••••••••••••' && this.apiConfig?.apiKey) {
+            apiKey = this.apiConfig.apiKey;
+        }
+        
+        if (!apiKey) {
+            this.showNotification('❌ 请先测试 API 配置');
+            return;
+        }
+        
+        saveBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/api/config/ai/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ provider, model, endpoint, api_key: apiKey })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                this.apiConfig = { provider, model, endpoint, apiKey };
+                this.showNotification('✅ AI 配置已保存');
                 closeModal();
-                this.showNotification('✅ API配置已保存！');
-            };
+            } else {
+                throw new Error(result.detail || '保存失败');
+            }
+        } catch (error) {
+            this.showNotification(`❌ 保存失败: ${error.message}`);
+            saveBtn.disabled = false;
         }
     }
 
     saveApiConfig(config) {
+        // 本地缓存也保存
         localStorage.setItem('githubTrendingApiConfig', JSON.stringify(config));
     }
 

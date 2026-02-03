@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 import os
 
-from routers import projects, history
+from routers import projects, history, config
 
 
 @asynccontextmanager
@@ -59,6 +59,7 @@ async def health_check():
 # 注册 API 路由
 app.include_router(projects.router)
 app.include_router(history.router)
+app.include_router(config.router)
 
 
 # ==================== 静态文件服务 ====================
