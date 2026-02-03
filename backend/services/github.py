@@ -7,11 +7,21 @@ import os
 import httpx
 import json
 import asyncio
+import unicodedata
 from datetime import datetime, timedelta
 from typing import List, Optional
 from models.schemas import ProjectCreate
 
 logger = logging.getLogger(__name__)
+
+
+def safe_str(s: str) -> str:
+    """安全字符串处理，移除或替换无法编码的字符"""
+    if s is None:
+        return ""
+    # 清理控制字符，保留可打印字符
+    cleaned = ''.join(c for c in s if unicodedata.category(c)[0] != 'C' or c in '\n\t')
+    return cleaned
 
 
 class GitHubService:
@@ -65,7 +75,7 @@ class GitHubService:
             f"created:>{date_since} sort:stars",
         ]
 
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
             for i, query in enumerate(queries):
                 try:
                     params = {"q": query, "per_page": 30}
@@ -76,6 +86,7 @@ class GitHubService:
                     )
 
                     if response.status_code == 200:
+                        # 确保响应内容使用 UTF-8 解码
                         data = response.json()
                         items = data.get("items", [])[:20]
                         for item in items:
@@ -109,13 +120,16 @@ class GitHubService:
             if not name:
                 return None
 
+            # 安全处理描述
+            description = safe_str(repo.get("description") or "暂无描述")
+
             return ProjectCreate(
                 name=name.split("/")[-1],
                 full_name=name,
                 url=repo.get("html_url", ""),
                 fork_url=f"{repo.get('html_url', '')}/fork",
                 issues_url=f"{repo.get('html_url', '')}/issues",
-                description=repo.get("description") or "暂无描述",
+                description=description,
                 language=repo.get("language") or "Other",
                 stars=repo.get("stargazers_count", 0),
                 forks=repo.get("forks_count", 0),
@@ -236,14 +250,16 @@ class GitHubService:
                 "Accept": "application/vnd.github.raw"
             }
             
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+                # 确保使用正确的编码
                 response = await client.get(
                     f"{self.BASE_URL}/repos/{full_name}/readme",
                     headers=readme_headers
                 )
                 
                 if response.status_code == 200:
-                    content = response.text
+                    # 强制使用 UTF-8 解码
+                    content = response.content.decode('utf-8', errors='ignore')
                     logger.info(f"README 获取成功: {full_name} ({len(content)} 字符)")
                     return content
                 elif response.status_code == 404:

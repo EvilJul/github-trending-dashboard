@@ -32,6 +32,11 @@ logging.basicConfig(
     ]
 )
 
+# 设置 StreamHandler 的编码
+for handler in logging.root.handlers:
+    if hasattr(handler, 'stream') and handler.stream:
+        handler.stream.reconfigure(encoding='utf-8')
+
 logger = logging.getLogger(__name__)
 
 
