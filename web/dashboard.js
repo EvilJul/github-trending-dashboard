@@ -34,7 +34,6 @@ class GitHubTrendingDashboard {
             const response = await fetch('/api/projects/');
             if (response.ok) {
                 const data = await response.json();
-                // 适配新格式
                 this.projects = (data.projects || []).map(p => this.normalizeProject(p));
                 this.updateLastUpdatedText(data.last_updated || data.lastUpdated);
             } else {
@@ -49,7 +48,7 @@ class GitHubTrendingDashboard {
         }
     }
 
-    // 规范化项目数据 - 兼容新旧格式
+    // 规范化项目数据
     normalizeProject(p) {
         return {
             name: p.full_name || p.fullName || p.name,
@@ -68,7 +67,7 @@ class GitHubTrendingDashboard {
         };
     }
 
-    // 加载本地数据（降级方案）
+    // 加载本地数据
     async loadLocalData() {
         try {
             const response = await fetch('./data/projects.json');
@@ -85,10 +84,8 @@ class GitHubTrendingDashboard {
         }
     }
 
-    // 更新最后更新时间显示
     updateLastUpdatedText(timestamp) {
         if (timestamp) {
-            // 兼容 datetime 和 string 格式
             const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
             if (!isNaN(date)) {
                 document.getElementById('last-update').textContent = date.toLocaleString('zh-CN');
@@ -96,7 +93,6 @@ class GitHubTrendingDashboard {
         }
     }
 
-    // 显示加载状态
     showLoading() {
         const container = document.getElementById('projects-container');
         if (container) {
@@ -109,7 +105,6 @@ class GitHubTrendingDashboard {
         }
     }
 
-    // 隐藏加载状态
     hideLoading() {
         this.isLoading = false;
     }
@@ -119,24 +114,19 @@ class GitHubTrendingDashboard {
         filterBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 if (this.isLoading) return;
-                
                 filterBtns.forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
                 this.currentFilter = e.target.dataset.lang;
-                
                 this.animateFilterChange();
             });
         });
     }
 
-    // 筛选切换动画
     animateFilterChange() {
         const container = document.getElementById('projects-container');
         if (!container) return;
-        
         container.style.opacity = '0';
         container.style.transform = 'translateY(10px)';
-        
         setTimeout(() => {
             this.renderProjects();
             container.style.opacity = '1';
@@ -145,34 +135,24 @@ class GitHubTrendingDashboard {
     }
 
     setupControls() {
-        // 生成数据按钮
         const generateBtn = document.getElementById('generate-btn');
         if (generateBtn) {
-            generateBtn.addEventListener('click', () => {
-                this.refreshData();
-            });
+            generateBtn.addEventListener('click', () => this.refreshData());
         }
 
-        // AI 增强按钮
         const aiGenerateBtn = document.getElementById('ai-generate-btn');
         if (aiGenerateBtn) {
-            aiGenerateBtn.addEventListener('click', () => {
-                this.refreshDataWithAI();
-            });
+            aiGenerateBtn.addEventListener('click', () => this.refreshDataWithAI());
         }
 
-        // 配置API按钮
         const configureBtn = document.getElementById('configure-btn');
         if (configureBtn) {
-            configureBtn.addEventListener('click', () => {
-                this.showApiConfigModal();
-            });
+            configureBtn.addEventListener('click', () => this.showApiConfigModal());
         }
 
         this.setupApiConfigModal();
     }
 
-    // 刷新数据
     async refreshData() {
         const generateBtn = document.getElementById('generate-btn');
         if (!generateBtn || this.isLoading) return;
@@ -183,7 +163,6 @@ class GitHubTrendingDashboard {
 
         try {
             this.showLoading();
-            
             const response = await fetch('/api/projects/refresh', { method: 'POST' });
             const result = await response.json();
             
@@ -197,14 +176,13 @@ class GitHubTrendingDashboard {
         } catch (error) {
             console.error('刷新数据失败:', error);
             this.hideLoading();
-            this.showNotification(`❌ 刷新失败: ${error.message}`);
+            this.showNotification(`❌ ${error.message}`);
         } finally {
             generateBtn.innerHTML = originalText;
             generateBtn.disabled = false;
         }
     }
 
-    // AI 增强刷新数据
     async refreshDataWithAI() {
         const aiBtn = document.getElementById('ai-generate-btn');
         if (!aiBtn || this.isLoading) return;
@@ -216,49 +194,25 @@ class GitHubTrendingDashboard {
         try {
             this.showLoading();
             
-            // 从后端获取已保存的配置
+            // 从后端获取配置
             const configResponse = await fetch('/api/config/ai');
             if (!configResponse.ok) {
                 throw new Error('请先配置 API Key');
             }
-            
             const config = await configResponse.json();
             
             if (!config.has_api_key) {
-                throw new Error('请先配置 API Key（点击"API配置"按钮）');
+                throw new Error('请先配置 API Key');
             }
             
-            // 获取完整的 API key
-            const fullConfig = this.apiConfig || this.loadApiConfig();
-            if (!fullConfig?.apiKey) {
-                // 从后端获取（后端会返回已保存的 key）
-                const saveResponse = await fetch('/api/config/ai/save', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        provider: config.provider,
-                        model: config.model,
-                        endpoint: config.endpoint,
-                        api_key: ''  // 后端会使用已保存的 key
-                    })
-                });
-                const saveResult = await saveResponse.json();
-                if (!saveResult.success || !saveResult.api_key) {
-                    throw new Error('请先配置 API Key');
-                }
-                fullConfig.apiKey = saveResult.api_key;
-            }
-            
-            // 构建 URL 参数
+            // 构建参数
             const params = new URLSearchParams({
                 provider: config.provider || 'qwen',
-                api_key: fullConfig.apiKey,
+                api_key: '',  // 使用后端保存的配置
                 endpoint: config.endpoint || ''
             });
             
-            const response = await fetch(`/api/projects/refresh-ai?${params}`, { 
-                method: 'POST' 
-            });
+            const response = await fetch(`/api/projects/refresh-ai?${params}`, { method: 'POST' });
             const result = await response.json();
             
             if (result.success) {
@@ -283,7 +237,6 @@ class GitHubTrendingDashboard {
         const modal = document.getElementById('api-config-modal');
         if (!modal) return;
         
-        // 重置状态
         const testResult = document.getElementById('test-result');
         const saveBtn = document.getElementById('save-config');
         if (testResult) {
@@ -292,7 +245,6 @@ class GitHubTrendingDashboard {
         }
         if (saveBtn) saveBtn.disabled = true;
         
-        // 从后端加载配置
         this.loadConfigFromBackend();
         
         modal.style.display = 'block';
@@ -319,18 +271,14 @@ class GitHubTrendingDashboard {
             if (modelInput) modelInput.value = aiConfig.model || '';
             if (endpointInput) endpointInput.value = aiConfig.endpoint || '';
             if (apiKeyInput) {
-                // 如果之前配置过 API key，显示占位符
                 apiKeyInput.value = aiConfig.has_api_key ? '••••••••••••••••' : '';
             }
             if (githubTokenInput) {
-                // GitHub Token 如果有配置显示占位符
                 githubTokenInput.value = githubConfig.has_token ? '••••••••••••••••' : '';
             }
             
-            // 更新端点输入框显示
             this.updateEndpointVisibility(aiConfig.provider);
             
-            // 如果有 API key，允许测试和保存
             const saveBtn = document.getElementById('save-config');
             if (saveBtn && aiConfig.has_api_key) {
                 saveBtn.disabled = false;
@@ -372,9 +320,7 @@ class GitHubTrendingDashboard {
         
         const closeModal = () => {
             modal.classList.remove('modal-show');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 200);
+            setTimeout(() => { modal.style.display = 'none'; }, 200);
         };
 
         if (closeBtn) closeBtn.onclick = closeModal;
@@ -384,25 +330,21 @@ class GitHubTrendingDashboard {
             if (event.target === modal) closeModal();
         };
 
-        // 提供商变更时更新 UI
         if (providerSelect) {
             providerSelect.addEventListener('change', (e) => {
                 this.updateEndpointVisibility(e.target.value);
             });
         }
 
-        // 测试连接按钮
         if (testBtn) {
             testBtn.onclick = () => this.testApiConfig();
         }
 
-        // 保存配置按钮
         if (saveBtn) {
             saveBtn.onclick = () => this.saveConfigToBackend(closeModal);
         }
 
-        // 监听输入变化，重置测试状态
-        ['api-provider', 'api-model', 'api-endpoint', 'api-key'].forEach(id => {
+        ['api-provider', 'api-model', 'api-endpoint', 'api-key', 'github-token'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
                 el.addEventListener('input', () => {
@@ -426,9 +368,10 @@ class GitHubTrendingDashboard {
         const provider = document.getElementById('api-provider')?.value;
         const model = document.getElementById('api-model')?.value;
         const endpoint = document.getElementById('api-endpoint')?.value;
-        const apiKey = document.getElementById('api-key')?.value;
+        let apiKey = document.getElementById('api-key')?.value;
+        let githubToken = document.getElementById('github-token')?.value;
         
-        if (!apiKey || apiKey === '••••••••••••••••') {
+        if (!apiKey) {
             if (testResult) {
                 testResult.className = 'test-result error';
                 testResult.textContent = '请输入 API Key';
@@ -436,7 +379,6 @@ class GitHubTrendingDashboard {
             return;
         }
         
-        // 显示测试中状态
         if (testResult) {
             testResult.className = 'test-result loading';
             testResult.textContent = '正在测试连接...';
@@ -444,6 +386,7 @@ class GitHubTrendingDashboard {
         if (testBtn) testBtn.disabled = true;
         
         try {
+            // 测试 API
             const response = await fetch('/api/config/ai/test', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -455,9 +398,35 @@ class GitHubTrendingDashboard {
             if (result.success) {
                 if (testResult) {
                     testResult.className = 'test-result success';
-                    testResult.textContent = `✅ ${result.message} (模型: ${result.model})`;
+                    testResult.textContent = `✅ ${result.message}`;
                 }
-                if (saveBtn) saveBtn.disabled = false;
+                
+                // 测试成功后自动保存
+                this.showNotification('🔄 正在保存配置...');
+                
+                // 保存 AI 配置
+                const saveResponse = await fetch('/api/config/ai/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider, model, endpoint, api_key: apiKey })
+                });
+                const saveResult = await saveResponse.json();
+                
+                if (saveResult.success) {
+                    // 保存 GitHub Token
+                    if (githubToken) {
+                        await fetch('/api/config/github/save', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ token: githubToken })
+                        });
+                    }
+                    
+                    this.apiConfig = { provider, model, endpoint, apiKey, githubToken };
+                    this.showNotification('✅ 配置已自动保存！');
+                } else {
+                    throw new Error(saveResult.detail || '保存失败');
+                }
             } else {
                 if (testResult) {
                     testResult.className = 'test-result error';
@@ -526,13 +495,12 @@ class GitHubTrendingDashboard {
                 throw new Error(result.detail || '保存失败');
             }
         } catch (error) {
-            this.showNotification(`❌ 保存失败: ${error.message}`);
+            this.showNotification(`❌ ${error.message}`);
             saveBtn.disabled = false;
         }
     }
 
     saveApiConfig(config) {
-        // 本地缓存也保存
         localStorage.setItem('githubTrendingApiConfig', JSON.stringify(config));
     }
 
@@ -550,33 +518,16 @@ class GitHubTrendingDashboard {
 
     getLanguageClass(language) {
         const langMap = {
-            'Java': 'java',
-            'Python': 'python',
-            'Jupyter Notebook': 'python',
-            'TypeScript': 'typescript',
-            'JavaScript': 'javascript',
-            'Go': 'go',
-            'Rust': 'rust',
-            'C++': 'cpp',
-            'C': 'c',
-            'Shell': 'other'
+            'Java': 'java', 'Python': 'python', 'Jupyter Notebook': 'python',
+            'TypeScript': 'typescript', 'JavaScript': 'javascript', 'Go': 'go',
+            'Rust': 'rust', 'C++': 'cpp', 'C': 'c', 'Shell': 'other'
         };
         return langMap[language] || 'other';
     }
 
     getTrendIndicator(trend) {
-        const icons = {
-            'rising': '↗️',
-            'falling': '↘️',
-            'steady': '➡️',
-            'stable': '✅'
-        };
-        const labels = {
-            'rising': '上升中',
-            'falling': '下降中',
-            'steady': '稳定',
-            'stable': '热门'
-        };
+        const icons = { 'rising': '↗️', 'falling': '↘️', 'steady': '➡️', 'stable': '✅' };
+        const labels = { 'rising': '上升中', 'falling': '下降中', 'steady': '稳定', 'stable': '热门' };
         return `<span class="trend trend-${trend}">${icons[trend] || '•'} ${labels[trend] || ''}</span>`;
     }
 
@@ -639,7 +590,6 @@ class GitHubTrendingDashboard {
         notification.className = 'notification';
         notification.textContent = message;
         document.body.appendChild(notification);
-        
         setTimeout(() => {
             notification.classList.add('notification-hide');
             setTimeout(() => notification.remove(), 300);
