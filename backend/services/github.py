@@ -2,12 +2,15 @@
 GitHub 数据获取服务
 """
 
+import logging
 import httpx
 import json
 import asyncio
 from datetime import datetime, timedelta
 from typing import List, Optional
 from models.schemas import ProjectCreate
+
+logger = logging.getLogger(__name__)
 
 
 class GitHubService:
@@ -27,8 +30,10 @@ class GitHubService:
         self.token = token
         if token:
             self.headers = {**self.HEADERS, "Authorization": f"token {token}"}
+            logger.info("使用 GitHub Token 认证")
         else:
             self.headers = self.HEADERS
+            logger.warning("未配置 GitHub Token，使用公共请求限制")
 
     def _load_token_from_config(self) -> Optional[str]:
         """从配置文件加载 GitHub Token"""
@@ -40,33 +45,29 @@ class GitHubService:
             if os.path.exists(config_file):
                 with open(config_file, 'r', encoding='utf-8') as f:
                     config = json.load(f)
-                    return config.get("github", {}).get("token")
+                    token = config.get("github", {}).get("token")
+                    if token:
+                        logger.info("已加载 GitHub Token")
+                    return token
         except Exception as e:
-            print(f"加载 GitHub Token 失败: {e}")
+            logger.error(f"加载 GitHub Token 失败: {e}")
         return None
-
-    async def _rate_limit_wait(self, client: httpx.AsyncClient) -> None:
-        """处理速率限制"""
-        # 简单处理：每次请求后等待 500ms
-        await asyncio.sleep(0.5)
 
     async def fetch_trending_projects(self, days: int = 7, per_page: int = 10) -> List[ProjectCreate]:
         """获取热门项目"""
         all_projects = []
-
-        # 计算日期
         date_since = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+        
+        logger.info(f"获取 GitHub Trending 项目 (since: {date_since})")
 
-        # 查询策略：减少 API 调用次数，每个请求获取更多结果
         queries = [
-            # 综合热门 - 一次性获取足够多的项目
             f"created:>{date_since} sort:stars",
         ]
 
         async with httpx.AsyncClient(timeout=30.0) as client:
             for i, query in enumerate(queries):
                 try:
-                    params = {"q": query, "per_page": 30}  # 每次获取更多项目
+                    params = {"q": query, "per_page": 30}
                     response = await client.get(
                         f"{self.BASE_URL}/search/repositories",
                         params=params,
@@ -75,29 +76,30 @@ class GitHubService:
 
                     if response.status_code == 200:
                         data = response.json()
-                        for item in data.get("items", [])[:20]:  # 取前20个
+                        items = data.get("items", [])[:20]
+                        for item in items:
                             project = self._parse_repository(item)
                             if project:
                                 all_projects.append(project)
+                        logger.info(f"查询成功，获取 {len(items)} 个项目")
                     elif response.status_code == 403:
-                        print("GitHub API rate limit hit, using cached data")
+                        logger.warning("GitHub API rate limit hit")
                         break
                     else:
-                        print(f"Query failed ({query}): {response.status_code}")
+                        logger.warning(f"查询失败 ({query}): {response.status_code}")
                     
-                    # 避免触发速率限制
                     if i < len(queries) - 1:
                         await asyncio.sleep(1.0)
                         
                 except Exception as e:
-                    print(f"Error fetching query {query}: {e}")
+                    logger.error(f"获取项目失败: {e}")
                     continue
 
-        # 去重并排序
         unique_projects = self._deduplicate(all_projects)
         sorted_projects = sorted(unique_projects, key=lambda x: x.stars, reverse=True)
-
-        return sorted_projects[:20]  # 返回前20个
+        
+        logger.info(f"共获取 {len(sorted_projects)} 个项目")
+        return sorted_projects[:20]
 
     def _parse_repository(self, repo: dict) -> Optional[ProjectCreate]:
         """解析 GitHub 仓库数据"""
@@ -122,7 +124,7 @@ class GitHubService:
                 usage_steps=self._generate_usage_steps(name, repo)
             )
         except Exception as e:
-            print(f"Error parsing repository: {e}")
+            logger.error(f"解析仓库失败: {e}")
             return None
 
     def _categorize(self, repo: dict) -> str:
@@ -132,38 +134,26 @@ class GitHubService:
         name = (repo.get("name", "") or "").lower()
         language = repo.get("language", "") or ""
 
-        # AI/机器学习
         ai_keywords = ["ai", "ml", "deep-learning", "neural", "llm", "gpt", "transformer"]
-        if any(kw in topics for kw in ai_keywords) or \
-           any(kw in description for kw in ai_keywords):
+        if any(kw in topics for kw in ai_keywords) or any(kw in description for kw in ai_keywords):
             return "AI/机器学习"
 
-        # 数据科学
         ds_keywords = ["data-science", "data-analysis", "analytics", "statistics", "pandas"]
-        if any(kw in topics for kw in ds_keywords) or \
-           any(kw in description for kw in ds_keywords) or \
-           any(kw in name for kw in ds_keywords):
+        if any(kw in topics for kw in ds_keywords) or any(kw in description for kw in ds_keywords):
             return "数据分析"
 
-        # Web开发
         web_keywords = ["web", "frontend", "backend", "http", "api", "server"]
-        if any(kw in topics for kw in web_keywords) or \
-           any(kw in description for kw in web_keywords):
+        if any(kw in topics for kw in web_keywords) or any(kw in description for kw in web_keywords):
             return "Web开发"
 
-        # 移动开发
         mobile_keywords = ["mobile", "android", "ios", "app"]
-        if any(kw in topics for kw in mobile_keywords) or \
-           any(kw in description for kw in mobile_keywords):
+        if any(kw in topics for kw in mobile_keywords) or any(kw in description for kw in mobile_keywords):
             return "移动开发"
 
-        # DevOps
         devops_keywords = ["devops", "docker", "kubernetes", "ci-cd", "deployment"]
-        if any(kw in topics for kw in devops_keywords) or \
-           any(kw in description for kw in devops_keywords):
+        if any(kw in topics for kw in devops_keywords) or any(kw in description for kw in devops_keywords):
             return "DevOps"
 
-        # 按语言分类
         if language == "Python":
             return "Python生态"
         elif language == "Java":
@@ -196,7 +186,6 @@ class GitHubService:
 
         language = repo.get("language", "") or ""
 
-        # 根据语言添加特定步骤
         if language == "Python":
             steps.extend([
                 "创建虚拟环境: python -m venv venv",
@@ -238,28 +227,31 @@ class GitHubService:
 
     async def fetch_readme(self, full_name: str) -> Optional[str]:
         """获取项目 README 内容"""
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            try:
-                # README API 需要正确的 Accept header
-                readme_headers = {
-                    **self.headers,
-                    "Accept": "application/vnd.github.raw"
-                }
-                
+        try:
+            logger.info(f"获取 README: {full_name}")
+            
+            readme_headers = {
+                **self.headers,
+                "Accept": "application/vnd.github.raw"
+            }
+            
+            async with httpx.AsyncClient(timeout=30.0) as client:
                 response = await client.get(
                     f"{self.BASE_URL}/repos/{full_name}/readme",
                     headers=readme_headers
                 )
                 
                 if response.status_code == 200:
-                    # 直接返回原始内容
-                    return response.text
+                    content = response.text
+                    logger.info(f"README 获取成功: {full_name} ({len(content)} 字符)")
+                    return content
                 elif response.status_code == 404:
-                    print(f"README not found for {full_name}")
+                    logger.info(f"项目无 README: {full_name}")
                     return None
                 else:
-                    print(f"Failed to fetch README for {full_name}: {response.status_code}")
+                    logger.warning(f"获取 README 失败 ({full_name}): {response.status_code}")
                     return None
-            except Exception as e:
-                print(f"Error fetching README for {full_name}: {e}")
-                return None
+                    
+        except Exception as e:
+            logger.error(f"获取 README 出错: {e}")
+            return None
