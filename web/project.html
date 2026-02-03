@@ -601,10 +601,11 @@
                         }
                     }
 
-                    // 获取 README
+                    // 获取 README - 使用查询参数
                     if (this.projectData && this.projectData.full_name) {
                         try {
-                            const readmeUrl = `/api/projects/${encodeURIComponent(this.projectData.full_name)}/readme`;
+                            const projectKey = encodeURIComponent(this.projectData.full_name);
+                            const readmeUrl = `/api/projects/readme?project_name=${projectKey}`;
                             console.log('获取 README:', readmeUrl);
                             const readmeResponse = await fetch(readmeUrl);
                             const readmeData = await readmeResponse.json();

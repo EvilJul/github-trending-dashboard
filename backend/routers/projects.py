@@ -207,7 +207,7 @@ async def get_stats():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/{project_name}/readme")
+@router.get("/readme")
 async def get_project_readme(project_name: str):
     """
     获取项目 README 内容
