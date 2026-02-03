@@ -11,13 +11,12 @@ class HistoryPage {
     }
 
     async loadHistory() {
-        // 尝试从服务器加载历史数据
-        // 这里使用模拟数据，实际应用中会从历史记录文件加载
+        // 从 API 加载历史数据
         try {
-            const response = await fetch('./data/history.json');
+            const response = await fetch('/api/history');
             if (response.ok) {
                 const data = await response.json();
-                this.historyData = data.history;
+                this.historyData = data.history || [];
             } else {
                 this.useMockData();
             }

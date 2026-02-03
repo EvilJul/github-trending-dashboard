@@ -1,104 +1,185 @@
 # GitHub Trending Projects Dashboard
 
-一个简约大气、富含科技感的GitHub热门项目展示系统，每周自动更新最新的热门开源项目信息。
+> 每周精选最热门的开源项目 | Powered by Clawdbot
 
-## 项目简介
+![Dashboard Preview](docs/images/preview.png)
 
-GitHub Trending Projects Dashboard 是一个自动化项目，旨在帮助开发者快速了解每周GitHub上最热门的开源项目。通过定期抓取GitHub Trending数据，系统会自动生成精美的报告，并提供直观的网页界面展示项目详情。
+## ✨ 特性
 
-该项目特别适合：
-- 关注技术趋势的开发者
-- 寻找开源项目的用户
-- 需要技术选型参考的团队
-- 对新兴技术感兴趣的个人
+- 🚀 **前后端分离架构** - FastAPI + 现代Web前端
+- 📊 **实时数据获取** - 从GitHub API自动抓取热门项目
+- 🎨 **优雅的界面** - 深色主题、流畅过渡动效
+- 📱 **响应式设计** - 完美适配桌面和移动设备
+- 📋 **历史记录** - 查看过往的热门项目报告
+- 🔄 **自动刷新** - 每周五上午10:00自动更新
+- 📚 **完整文档** - API文档、部署指南
 
-## 项目结构
+## 🏗️ 架构
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                      Frontend                            │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐  │
+│  │ index.html  │  │ history.html│  │  dashboard.js   │  │
+│  └─────────────┘  └─────────────┘  └─────────────────┘  │
+└────────────────────────┬────────────────────────────────┘
+                         │ HTTP API
+┌────────────────────────┴────────────────────────────────┐
+│                      Backend (FastAPI)                   │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │  /api/projects  │  /api/refresh  │  /api/history  │   │
+│  └──────────────────────────────────────────────────┘   │
+│                          │                               │
+│              ┌───────────┴───────────┐                   │
+│              │   GitHub Scraper      │                   │
+│              └───────────────────────┘                   │
+└────────────────────────┬────────────────────────────────┘
+                         │
+┌────────────────────────┴────────────────────────────────┐
+│                       Data Storage                       │
+│        data/projects.json  │  data/history.json         │
+└─────────────────────────────────────────────────────────┘
+```
+
+## 🚀 快速开始
+
+### 1. 安装依赖
+
+```bash
+cd backend
+pip install -r requirements.txt
+```
+
+### 2. 启动后端服务
+
+```bash
+# 开发模式
+python main.py
+
+# 或使用 uvicorn
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### 3. 访问应用
+
+打开浏览器访问: http://localhost:8000
+
+## 📖 使用指南
+
+### 获取最新项目
+
+1. 点击右上角「刷新数据」按钮
+2. 等待后端从GitHub获取数据
+3. 数据自动保存并显示
+
+### 筛选项目
+
+使用语言筛选按钮快速找到感兴趣的项目：
+- ☕ Java
+- 🐍 Python
+- 📜 JavaScript
+- 📘 TypeScript
+
+### 查看历史
+
+点击顶部「历史记录」查看过往报告。
+
+## ⚙️ 配置说明
+
+### 定时任务 (可选)
+
+每周五上午10:00自动刷新数据：
+
+```bash
+# 添加 cron 任务
+clawdbot cron add --schedule "0 10 * * 5" --task "curl -X POST http://localhost:8000/api/refresh"
+```
+
+### 环境变量
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| PORT | 服务端口 | 8000 |
+| HOST | 绑定地址 | 0.0.0.0 |
+
+## 📚 API 文档
+
+启动服务后访问：
+- **Swagger UI**: http://localhost:8000/api/docs
+- **ReDoc**: http://localhost:8000/api/redoc
+
+### 主要端点
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/projects/` | 获取项目列表 |
+| POST | `/api/projects/refresh` | 刷新数据 |
+| GET | `/api/projects/stats/summary` | 获取统计信息 |
+| GET | `/api/history/` | 获取历史记录 |
+| GET | `/api/history/{id}` | 获取单条历史记录 |
+| GET | `/health` | 健康检查 |
+
+## 📁 项目结构
 
 ```
 github_trending_projects/
-├── scripts/                 # 脚本文件
-│   ├── github_report_generator.js    # 报告生成脚本
-│   ├── github-trending-fetcher.js    # 数据获取脚本
-│   └── github-weekly-report.sh       # 报告生成脚本
-├── data/                   # 数据文件
-│   └── projects.json       # GitHub项目数据
-├── web/                    # 网页界面
-│   ├── index.html          # 主页面
-│   ├── dashboard.js        # 交互逻辑
-│   └── (样式和图片等)
-└── README.md               # 项目说明
+├── backend/
+│   ├── main.py           # FastAPI 主服务
+│   └── requirements.txt  # Python 依赖
+├── web/
+│   ├── index.html        # 主页面
+│   ├── history.html      # 历史记录页
+│   └── dashboard.js      # 前端逻辑
+├── data/
+│   ├── projects.json     # 项目数据
+│   └── history.json      # 历史记录
+├── docs/
+│   ├── API.md            # API 文档
+│   └── images/           # 图片资源
+├── config.json           # 项目配置
+└── README.md             # 本文件
 ```
 
-## 功能特点
+## 🛠️ 开发
 
-- 🚀 **自动更新**：每周五上午10点自动获取最新的GitHub热门项目
-- 📊 **数据展示**：清晰展示项目Stars、Forks、Issues等关键指标
-- 🎨 **科技美感**：简约大气的设计风格，富含现代科技感
-- 📱 **响应式布局**：适配各种屏幕尺寸
-- 🔧 **使用指南**：提供每个项目的简单使用步骤
+### 添加新功能
 
-## 使用方法
+1. **后端**: 在 `backend/main.py` 添加新端点
+2. **前端**: 在 `web/dashboard.js` 添加新方法
+3. **样式**: 在 `web/index.html` 的 `<style>` 中添加
 
-### 本地查看网页界面
-
-1. 直接在浏览器中打开 `web/index.html` 文件
-2. 或者使用简单的HTTP服务器（推荐）：
-   ```bash
-   cd github_trending_projects/web
-   python3 -m http.server 8000
-   ```
-   然后访问 `http://localhost:8000`
-
-### 数据更新
-
-系统会根据设定的cron任务每周自动更新数据，也可以手动触发更新：
-
-```
-生成一份最新的 GitHub 热门项目报告
-```
-
-## 技术栈
-
-- HTML5/CSS3
-- JavaScript (ES6+)
-- 响应式设计
-- JSON数据格式
-
-## 自定义配置
-
-如需修改更新频率或其他设置，可以编辑cron任务：
+### 运行测试
 
 ```bash
-clawdbot cron list  # 查看现有任务
-clawdbot cron edit <job-id>  # 编辑任务
+# 后端测试
+cd backend
+python -m pytest
+
+# API 健康检查
+curl http://localhost:8000/api/health
 ```
 
-## 维护
+## 📝 更新日志
 
-- 数据文件位于 `data/projects.json`
-- 网页界面文件位于 `web/` 目录
-- 脚本文件位于 `scripts/` 目录
+### v1.1.0 (2026-02-03)
+- ✨ 新增前后端分离架构
+- 🎨 优化界面动效 (页面切换、卡片入场动画)
+- 📊 新增加载状态动画
+- 📚 完善API文档
+- 🔄 支持实时数据刷新
+- 📋 完善历史记录功能
 
-## 扩展功能
+### v1.0.0 (2026-01-29)
+- 🎉 初始版本
+- 📊 项目展示功能
+- 🌙 深色主题
 
-系统支持以下扩展功能：
+## 📄 许可证
 
-### 添加更多编程语言
-可以修改脚本以获取不同编程语言的热门项目：
-- 当前主要关注Java项目
-- 可扩展至JavaScript、Python、Go等语言
-
-### 自定义展示字段
-可以在 `projects.json` 中添加更多字段：
-- 项目许可证信息
-- 最近提交活动
-- 贡献者统计
-
-### 高级过滤功能
-- 按项目大小过滤
-- 按活跃度排序
-- 按特定标签筛选
+MIT License
 
 ---
 
-🤖 由 Clawdbot 自动维护 | 📅 每周五自动更新
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！

@@ -1,0 +1,32 @@
+{
+  "history": [
+    {
+      "id": "2026-W6",
+      "week": "2026年6月第6周",
+      "date": "2026-02-03",
+      "total_projects": 20,
+      "projects": [
+        "lukilabs/beautiful-mermaid",
+        "antfu/skills",
+        "gavrielc/nanoclaw",
+        "Robbyant/lingbot-world",
+        "HKUDS/nanobot",
+        "Leey21/awesome-ai-research-writing",
+        "QwenLM/Qwen3-ASR",
+        "miaoxworld/OpenClawInstaller",
+        "DingTalk-Real-AI/dingtalk-moltbot-connector",
+        "zarazhangrui/frontend-slides",
+        "PACKIARAJ-R/ML-Image-Classification-using-CNN",
+        "lucidrains/sdft-pytorch",
+        "jmbarrancoml/awesome-european-ai",
+        "berrzebb/zeroquant",
+        "LM-Kit/LynxTranscribe",
+        "sainimal1ba-hue/AI-Powered-Sensory-Overload-Prevention-for-Autism",
+        "AmirhosseinHonardoust/Student-Survey-Quality-Bias-Audit",
+        "AmirhosseinHonardoust/Coverage-is-The-Silent-Killer",
+        "Norma-Q/Pauli-Propagation---GPU-acceleration",
+        "final-kk/kandle"
+      ]
+    }
+  ]
+}

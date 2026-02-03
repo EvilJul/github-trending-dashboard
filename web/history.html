@@ -9,18 +9,16 @@
             --primary-color: #2d3748;
             --secondary-color: #4a5568;
             --accent-color: #3182ce;
+            --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --light-color: #f7fafc;
             --dark-color: #1a202c;
-            --success-color: #48bb78;
-            --warning-color: #ecc94b;
-            --danger-color: #f56565;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
@@ -28,6 +26,12 @@
             color: var(--light-color);
             min-height: 100vh;
             padding: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        body.loaded {
+            opacity: 1;
         }
 
         .container {
@@ -39,12 +43,23 @@
             text-align: center;
             padding: 30px 0;
             margin-bottom: 30px;
+            animation: fadeInDown 0.6s ease forwards;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -60,6 +75,8 @@
             justify-content: center;
             gap: 20px;
             margin-bottom: 30px;
+            animation: fadeIn 0.6s ease 0.2s forwards;
+            opacity: 0;
         }
 
         .nav-btn {
@@ -69,6 +86,9 @@
             font-weight: 600;
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: var(--light-color);
+            cursor: pointer;
         }
 
         .nav-btn:hover {
@@ -76,19 +96,21 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .nav-btn.secondary {
-            background: transparent;
-            color: var(--light-color);
+        .nav-btn.secondary, .nav-btn:not(.current) {
+            background: var(--accent-gradient);
+            border-color: transparent;
         }
 
-        .nav-btn.current {
-            background: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
-        }
-
+        /* History Section */
         .history-section {
             margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .history-header {
@@ -103,12 +125,12 @@
         .history-date {
             font-size: 1.3rem;
             font-weight: 600;
-            color: var(--accent-color);
+            color: #667eea;
         }
 
         .report-link {
             padding: 8px 20px;
-            background: var(--accent-color);
+            background: var(--accent-gradient);
             color: white;
             text-decoration: none;
             border-radius: 6px;
@@ -117,7 +139,8 @@
         }
 
         .report-link:hover {
-            background: #2c5282;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
         .summary-content {
@@ -129,7 +152,7 @@
         }
 
         .summary-content h3 {
-            color: var(--accent-color);
+            color: #667eea;
             margin-bottom: 15px;
         }
 
@@ -154,12 +177,18 @@
             border-radius: 8px;
             padding: 15px;
             text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            background: rgba(49, 130, 206, 0.15);
         }
 
         .stat-value {
             font-size: 1.8rem;
             font-weight: 600;
-            color: var(--accent-color);
+            color: #667eea;
         }
 
         .stat-label {
@@ -184,14 +213,17 @@
         }
 
         .project-item:hover {
-            border-color: var(--accent-color);
-            transform: translateY(-2px);
+            border-color: #667eea;
+            transform: translateY(-3px);
         }
 
         .project-name {
-            color: var(--accent-color);
+            color: #667eea;
             font-weight: 600;
             margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .project-stats {
@@ -199,6 +231,27 @@
             gap: 15px;
             color: #a0aec0;
             font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        /* Loading State */
+        .loading-container {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .no-history {
@@ -218,6 +271,8 @@
             color: #a0aec0;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             margin-top: 40px;
+            animation: fadeIn 0.6s ease 0.5s forwards;
+            opacity: 0;
         }
 
         @media (max-width: 768px) {
@@ -247,11 +302,14 @@
 
         <nav class="nav-bar">
             <a href="index.html" class="nav-btn secondary">📊 热门项目</a>
-            <a href="history.html" class="nav-btn current">📋 历史记录</a>
+            <a href="history.html" class="nav-btn">📋 历史记录</a>
         </nav>
 
         <main id="history-container">
-            <!-- 历史记录将通过 JavaScript 动态加载 -->
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">正在加载历史数据...</p>
+            </div>
         </main>
 
         <footer class="footer-info">
@@ -261,7 +319,6 @@
     </div>
 
     <script>
-        // 历史记录管理
         class HistoryManager {
             constructor() {
                 this.historyData = [];
@@ -274,160 +331,74 @@
             }
 
             async loadHistoryData() {
-                // 模拟历史数据 - 实际应用中会从服务器加载
+                try {
+                    const response = await fetch('/api/history/');
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.historyData = data.history || [];
+                    } else {
+                        this.useMockData();
+                    }
+                } catch (error) {
+                    console.warn('加载历史数据失败，使用模拟数据:', error);
+                    this.useMockData();
+                }
+            }
+
+            useMockData() {
                 this.historyData = [
                     {
-                        id: "20260124",
+                        id: "2026-W4",
+                        week: "2026年1月第4周",
                         date: "2026-01-24",
-                        displayDate: "2026年1月24日",
-                        summary: {
-                            totalProjects: 10,
-                            totalStars: 245600,
-                            topLanguage: "Python",
-                            highlights: [
-                                "AI/机器学习项目热度持续上升",
-                                "新增 3 个 Python 优质项目",
-                                "深度学习框架项目表现突出"
-                            ]
-                        },
+                        total_projects: 10,
                         projects: [
-                            {
-                                name: "huggingface/transformers",
-                                stars: 156000,
-                                language: "Python",
-                                trend: "stable"
-                            },
-                            {
-                                name: "ultralytics/yolov5",
-                                stars: 43200,
-                                language: "Python",
-                                trend: "rising"
-                            },
-                            {
-                                name: "langchain-ai/langchain",
-                                stars: 98700,
-                                language: "Python",
-                                trend: "rising"
-                            }
-                        ],
-                        reportUrl: "#"
+                            { name: "huggingface/transformers", stars: 156000, language: "Python", trend: "stable" },
+                            { name: "ultralytics/yolov5", stars: 43200, language: "Python", trend: "rising" },
+                            { name: "langchain-ai/langchain", stars: 98700, language: "Python", trend: "rising" }
+                        ]
                     },
                     {
-                        id: "20260117",
+                        id: "2026-W3",
+                        week: "2026年1月第3周",
                         date: "2026-01-17",
-                        displayDate: "2026年1月17日",
-                        summary: {
-                            totalProjects: 10,
-                            totalStars: 198500,
-                            topLanguage: "Java",
-                            highlights: [
-                                "企业级 Java 项目持续热门",
-                                "Apache DolphinScheduler 入选",
-                                "新增低层级设计学习资源"
-                            ]
-                        },
+                        total_projects: 10,
                         projects: [
-                            {
-                                name: "ashishps1/awesome-low-level-design",
-                                stars: 21500,
-                                language: "Java",
-                                trend: "rising"
-                            },
-                            {
-                                name: "apache/dolphinscheduler",
-                                stars: 12100,
-                                language: "Java",
-                                trend: "stable"
-                            },
-                            {
-                                name: "TeamNewPipe/NewPipe",
-                                stars: 28800,
-                                language: "Java",
-                                trend: "stable"
-                            }
-                        ],
-                        reportUrl: "#"
+                            { name: "ashishps1/awesome-low-level-design", stars: 21500, language: "Java", trend: "rising" },
+                            { name: "apache/dolphinscheduler", stars: 12100, language: "Java", trend: "stable" },
+                            { name: "TeamNewPipe/NewPipe", stars: 28800, language: "Java", trend: "stable" }
+                        ]
                     },
                     {
-                        id: "20260110",
+                        id: "2026-W2",
+                        week: "2026年1月第2周",
                         date: "2026-01-10",
-                        displayDate: "2026年1月10日",
-                        summary: {
-                            totalProjects: 10,
-                            totalStars: 175200,
-                            topLanguage: "Python",
-                            highlights: [
-                                "新加入 ComfyUI AI 创作工具",
-                                "飞桨 PaddlePaddle 入选",
-                                "Gradio 界面框架热度上升"
-                            ]
-                        },
+                        total_projects: 10,
                         projects: [
-                            {
-                                name: "PaddlePaddle/Paddle",
-                                stars: 34500,
-                                language: "Python",
-                                trend: "rising"
-                            },
-                            {
-                                name: "ComfyUI/ComfyUI",
-                                stars: 67800,
-                                language: "Python",
-                                trend: "rising"
-                            },
-                            {
-                                name: "gradio-app/gradio",
-                                stars: 34500,
-                                language: "Python",
-                                trend: "stable"
-                            }
-                        ],
-                        reportUrl: "#"
-                    },
-                    {
-                        id: "20260103",
-                        date: "2026-01-03",
-                        displayDate: "2026年1月3日",
-                        summary: {
-                            totalProjects: 10,
-                            totalStars: 152800,
-                            topLanguage: "Java",
-                            highlights: [
-                                "Signal-Server 入选",
-                                "Spring AI Alibaba 入选",
-                                "项目多样性增加"
-                            ]
-                        },
-                        projects: [
-                            {
-                                name: "alibaba/spring-ai-alibaba",
-                                stars: 1100,
-                                language: "Java",
-                                trend: "rising"
-                            },
-                            {
-                                name: "signalapp/Signal-Server",
-                                stars: 8200,
-                                language: "Java",
-                                trend: "steady"
-                            },
-                            {
-                                name: "TeamNewPipe/NewPipe",
-                                stars: 28800,
-                                language: "Java",
-                                trend: "stable"
-                            }
-                        ],
-                        reportUrl: "#"
+                            { name: "PaddlePaddle/Paddle", stars: 34500, language: "Python", trend: "rising" },
+                            { name: "ComfyUI/ComfyUI", stars: 67800, language: "Python", trend: "rising" },
+                            { name: "gradio-app/gradio", stars: 34500, language: "Python", trend: "stable" }
+                        ]
                     }
                 ];
+            }
+
+            formatNumber(num) {
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+                return num.toString();
+            }
+
+            getTrendEmoji(trend) {
+                const icons = { 'rising': '↗️', 'falling': '↘️', 'steady': '➡️', 'stable': '✅' };
+                return icons[trend] || '•';
             }
 
             renderHistory() {
                 const container = document.getElementById('history-container');
                 if (!container) return;
 
-                if (this.historyData.length === 0) {
+                if (!this.historyData || this.historyData.length === 0) {
                     container.innerHTML = `
                         <div class="no-history">
                             <h3>📭 暂无历史记录</h3>
@@ -439,33 +410,39 @@
 
                 container.innerHTML = '';
 
-                this.historyData.forEach(record => {
+                this.historyData.forEach((record, index) => {
                     const section = document.createElement('div');
                     section.className = 'history-section';
+                    section.style.animationDelay = `${index * 0.15}s`;
+                    
+                    const projects = record.projects || [];
+                    const displayDate = record.week || record.date;
                     
                     section.innerHTML = `
                         <div class="history-header">
-                            <span class="history-date">📅 ${record.displayDate}</span>
-                            <a href="${record.reportUrl}" class="report-link">📄 查看完整报告</a>
+                            <span class="history-date">📅 ${displayDate}</span>
+                            <a href="#" class="report-link">📄 查看完整报告</a>
                         </div>
                         
                         <div class="summary-content">
                             <h3>📊 本周亮点</h3>
                             <ul>
-                                ${record.summary.highlights.map(h => `<li>${h}</li>`).join('')}
+                                <li>收录了 ${record.total_projects || projects.length} 个热门开源项目</li>
+                                <li>涵盖 AI/机器学习、Web开发等多个领域</li>
+                                <li>每周持续更新，追踪技术前沿</li>
                             </ul>
                             
                             <div class="stats-grid">
                                 <div class="stat-card">
-                                    <div class="stat-value">${record.summary.totalProjects}</div>
+                                    <div class="stat-value">${record.total_projects || projects.length}</div>
                                     <div class="stat-label">收录项目</div>
                                 </div>
                                 <div class="stat-card">
-                                    <div class="stat-value">${this.formatNumber(record.summary.totalStars)}</div>
+                                    <div class="stat-value">${this.formatNumber(projects.reduce((sum, p) => sum + (p.stars || 0), 0))}</div>
                                     <div class="stat-label">总 Stars</div>
                                 </div>
                                 <div class="stat-card">
-                                    <div class="stat-value">${record.summary.topLanguage}</div>
+                                    <div class="stat-value">${this.getTopLanguage(projects)}</div>
                                     <div class="stat-label">热门语言</div>
                                 </div>
                             </div>
@@ -473,12 +450,12 @@
 
                         <h4 style="margin: 20px 0 15px 0;">🏆 本周 Top 3 项目</h4>
                         <div class="projects-preview">
-                            ${record.projects.map(project => `
+                            ${projects.slice(0, 5).map(project => `
                                 <div class="project-item">
                                     <div class="project-name">${project.name}</div>
                                     <div class="project-stats">
                                         <span>⭐ ${this.formatNumber(project.stars)}</span>
-                                        <span>🐍 ${project.language}</span>
+                                        <span>🐍 ${project.language || '-'}</span>
                                         <span>${this.getTrendEmoji(project.trend)}</span>
                                     </div>
                                 </div>
@@ -490,27 +467,18 @@
                 });
             }
 
-            formatNumber(num) {
-                if (num >= 1000000) {
-                    return (num / 1000000).toFixed(1) + 'M';
-                } else if (num >= 1000) {
-                    return (num / 1000).toFixed(1) + 'k';
-                }
-                return num.toString();
-            }
-
-            getTrendEmoji(trend) {
-                switch(trend) {
-                    case 'rising': return '↗️';
-                    case 'falling': return '↘️';
-                    case 'steady': return '➡️';
-                    default: return '✅';
-                }
+            getTopLanguage(projects) {
+                const langs = {};
+                projects.forEach(p => {
+                    const lang = p.language || 'Other';
+                    langs[lang] = (langs[lang] || 0) + 1;
+                });
+                return Object.keys(langs).sort((a, b) => langs[b] - langs[a])[0] || '-';
             }
         }
 
-        // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('loaded');
             new HistoryManager();
         });
     </script>
