@@ -656,50 +656,31 @@
             renderMarkdown(content) {
                 if (!content) return '';
                 
-                // 基本 Markdown 转换
-                let html = this.escapeHtml(content);
+                // 使用 marked.js 渲染 Markdown
+                if (typeof marked !== 'undefined') {
+                    // 配置 marked 选项
+                    marked.setOptions({
+                        gfm: true,           // 启用 GitHub 风格的 Markdown
+                        breaks: true,        // 将换行符转换为 <br>
+                        sanitize: false,     // 允许 HTML（因为内容来自 GitHub）
+                        smartLists: true,    // 使用更智能的列表
+                        highlight: false     // 禁用代码高亮（避免加载 highlight.js）
+                    });
+                    
+                    return marked.parse(content);
+                }
                 
-                // 标题
+                // 如果 marked 未加载，使用简单的降级方案
+                let html = this.escapeHtml(content);
                 html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
                 html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
                 html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
-                
-                // 粗体
                 html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                
-                // 斜体
-                html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-                
-                // 行内代码
                 html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-                
-                // 代码块
-                html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
-                
-                // 链接
+                html = html.replace(/```[\s\S]*?```/g, '<pre><code>代码块</code></pre>');
                 html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-                
-                // 无序列表
-                html = html.replace(/^- (.*$)/gm, '<li>$1</li>');
-                html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-                
-                // 有序列表
-                html = html.replace(/^\d+\. (.*$)/gm, '<li>$1</li>');
-                
-                // 引用
-                html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
-                
-                // 水平线
-                html = html.replace(/^---$/gm, '<hr>');
-                
-                // 段落
                 html = html.replace(/\n\n/g, '</p><p>');
-                html = '<p>' + html + '</p>';
-                
-                // 清理空的段落
-                html = html.replace(/<p>\s*<\/p>/g, '');
-                
-                return html;
+                return '<p>' + html + '</p>';
             }
 
             renderProject() {
@@ -812,5 +793,7 @@
             new ProjectDetail();
         });
     </script>
+    <!-- Markdown 渲染库 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
 </html>
