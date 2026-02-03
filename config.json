@@ -2,36 +2,20 @@
   "project": {
     "name": "GitHub Trending Projects Dashboard",
     "version": "1.0.0",
-    "description": "Automated GitHub trending projects dashboard with weekly updates"
-  },
-  "github": {
-    "token": "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    "description": "Automated GitHub trending projects dashboard"
   },
   "settings": {
     "updateSchedule": "0 10 * * 5",
     "timezone": "Asia/Shanghai",
     "languages": ["Python", "JavaScript", "TypeScript", "Go", "Java"],
-    "numberOfProjects": 10,
-    "displayFields": [
-      "name",
-      "description",
-      "stars",
-      "forks",
-      "issues",
-      "language",
-      "usageSteps"
-    ]
+    "numberOfProjects": 10
   },
   "paths": {
     "dataFile": "./data/projects.json",
-    "webRoot": "./web",
-    "scripts": "./scripts",
-    "reports": "../reports"
+    "webRoot": "./web"
   },
   "dashboard": {
-    "title": "GitHub Trending Projects Dashboard",
-    "theme": "dark-tech",
-    "refreshInterval": 300000,
-    "showTrends": true
+    "title": "GitHub Trending Projects",
+    "theme": "dark-tech"
   }
 }

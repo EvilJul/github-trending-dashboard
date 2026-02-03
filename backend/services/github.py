@@ -46,11 +46,20 @@ class GitHubService:
 
     def _load_token_from_config(self) -> Optional[str]:
         try:
-            # 配置文件在项目根目录
-            config_file = os.path.join(
+            # 优先从 config.local.json 加载（不提交到 git）
+            local_config = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
-                "config.json"
+                "config.local.json"
             )
+            
+            config_file = local_config
+            if not os.path.exists(config_file):
+                # 回退到 config.json
+                config_file = os.path.join(
+                    os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
+                    "config.json"
+                )
+            
             if os.path.exists(config_file):
                 with open(config_file, 'r', encoding='utf-8') as f:
                     config = json.load(f)
