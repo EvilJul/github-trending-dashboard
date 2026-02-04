@@ -1,6 +1,6 @@
 # GitHub Trending Projects Dashboard
 
-> 每周精选最热门的开源项目 | Powered by Clawdbot
+> 每周精选最热门的开源项目
 
 ![Dashboard Preview](docs/images/preview.png)
 
@@ -128,11 +128,14 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8001
 
 ### 定时任务 (可选)
 
-每周五上午10:00自动刷新数据：
+每周五上午10:00自动刷新数据（使用系统 crontab）：
 
 ```bash
-# 添加 cron 任务
-clawdbot cron add --schedule "0 10 * * 5" --task "curl -X POST http://localhost:8001/api/projects/refresh"
+# 添加定时任务
+crontab -e
+
+# 添加以下行：
+# 0 10 * * 5 curl -X POST http://localhost:8001/api/projects/refresh
 ```
 
 ### 环境变量
