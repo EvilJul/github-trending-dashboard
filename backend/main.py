@@ -46,17 +46,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# 请求日志中间件
-@app.middleware("http")
-async def log_requests(request: Request, call_next):
-    logger.info(f"📥 REQUEST: {request.method} {request.url.path}")
-    
-    response = await call_next(request)
-    
-    logger.info(f"📤 RESPONSE: {request.method} {request.url.path} -> {response.status_code}")
-    
-    return response
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -84,6 +73,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# 请求日志中间件（必须在 app 定义之后）
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"📥 REQUEST: {request.method} {request.url.path}")
+    
+    response = await call_next(request)
+    
+    logger.info(f"📤 RESPONSE: {request.method} {request.url.path} -> {response.status_code}")
+    
+    return response
 
 WEB_DIR = os.path.join(os.path.dirname(__file__), "../web")
 
