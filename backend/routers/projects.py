@@ -4,7 +4,7 @@
 
 import logging
 from fastapi import APIRouter, HTTPException
-from typing import List
+from typing import List, Optional
 from models.schemas import ProjectsResponse, ProjectResponse, RefreshResponse, ErrorResponse
 from services.github import GitHubService
 from services.storage import StorageService
@@ -16,6 +16,9 @@ router = APIRouter(prefix="/api/projects", tags=["projects"])
 # 初始化服务
 storage = StorageService()
 github_service = GitHubService()
+
+# 存储异步任务结果
+_async_readme_results: dict = {}
 
 
 @router.get("/", response_model=ProjectsResponse)
@@ -210,7 +213,7 @@ async def get_stats():
 @router.get("/readme")
 async def get_project_readme(project_name: str):
     """
-    获取项目 README 内容
+    获取项目 README 内容（同步方式）
     """
     try:
         # URL 解码 project_name
@@ -269,6 +272,115 @@ async def get_project_readme(project_name: str):
             "readme": None,
             "has_readme": False,
             "error": str(e)
+        }
+
+
+@router.get("/readme/async")
+async def get_project_readme_async(project_name: str):
+    """
+    异步获取项目 README（后台加载，前端轮询）
+    返回任务 ID，前端可以轮询获取结果
+    """
+    import asyncio
+    import uuid
+    from urllib.parse import unquote
+    
+    try:
+        project_name = unquote(project_name)
+        
+        # 查找项目
+        projects = storage.get_projects()
+        project = None
+        
+        for p in projects:
+            if p.name == project_name or p.full_name == project_name:
+                project = p
+                break
+        
+        if not project:
+            return {
+                "task_id": None,
+                "status": "error",
+                "message": "项目不存在"
+            }
+        
+        full_name = project.full_name
+        task_id = str(uuid.uuid4())[:8]
+        
+        logger.info(f"[{task_id}] 启动异步获取 README: {full_name}")
+        
+        # 在后台任务中获取 README
+        async def fetch_readme_background():
+            try:
+                readme_content = await github_service.fetch_readme(full_name)
+                result = {
+                    "task_id": task_id,
+                    "status": "success" if readme_content else "empty",
+                    "readme": readme_content,
+                    "has_readme": readme_content is not None
+                }
+                # 存储结果
+                _async_readme_results[task_id] = result
+                logger.info(f"[{task_id}] README 获取完成，状态: {result['status']}")
+                return result
+            except Exception as e:
+                logger.error(f"[{task_id}] 异步获取 README 失败: {e}")
+                result = {
+                    "task_id": task_id,
+                    "status": "error",
+                    "message": str(e),
+                    "readme": None,
+                    "has_readme": False
+                }
+                _async_readme_results[task_id] = result
+                return result
+        
+        # 启动后台任务
+        asyncio.create_task(fetch_readme_background())
+        
+        return {
+            "task_id": task_id,
+            "status": "pending",
+            "message": "README 获取中，请稍候..."
+        }
+        
+    except Exception as e:
+        logger.error(f"启动异步获取失败: {e}")
+        return {
+            "task_id": None,
+            "status": "error",
+            "message": str(e)
+        }
+
+
+@router.get("/readme/result/{task_id}")
+async def get_readme_result(task_id: str):
+    """
+    获取异步 README 获取结果
+    """
+    try:
+        # 从内存中获取结果（如果有）
+        result = _async_readme_results.get(task_id)
+        
+        if result:
+            # 清理已完成的任务（保留错误状态稍久一点）
+            if result.get("status") in ["success", "empty"]:
+                del _async_readme_results[task_id]
+            return result
+        
+        # 检查是否还在处理中
+        return {
+            "task_id": task_id,
+            "status": "pending",
+            "message": "正在获取..."
+        }
+        
+    except Exception as e:
+        logger.error(f"获取任务结果失败: {e}")
+        return {
+            "task_id": task_id,
+            "status": "error",
+            "message": str(e)
         }
 
 

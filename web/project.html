@@ -1043,6 +1043,87 @@
         margin-bottom: 15px;
     }
     
+    /* ===== README 加载状态样式 ===== */
+    .readme-loading {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .loading-skeleton {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .skeleton-line {
+        height: 16px;
+        background: linear-gradient(90deg, 
+            rgba(255,255,255,0.05) 0%, 
+            rgba(255,255,255,0.1) 50%, 
+            rgba(255,255,255,0.05) 100%
+        );
+        background-size: 200% 100%;
+        border-radius: 4px;
+        margin-bottom: 16px;
+        animation: skeleton-shimmer 1.5s infinite;
+    }
+    
+    .skeleton-line.title {
+        height: 24px;
+        width: 60%;
+        margin-bottom: 20px;
+    }
+    
+    .skeleton-line.paragraph {
+        width: 100%;
+    }
+    
+    .skeleton-line.paragraph.short {
+        width: 70%;
+    }
+    
+    @keyframes skeleton-shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+    
+    .loading-hint {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-top: 20px;
+        font-family: var(--font-mono);
+    }
+    
+    .error-readme {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-secondary);
+    }
+    
+    .error-readme-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+    
+    .btn-retry {
+        margin-top: 20px;
+        padding: 12px 28px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-glass);
+        color: var(--accent-cyan);
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: var(--font-mono);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-retry:hover {
+        border-color: var(--accent-cyan);
+        box-shadow: var(--glow-cyan);
+        transform: translateY(-2px);
+    }
+    
     .error-message {
         background: rgba(255, 107, 53, 0.1);
         border: 1px solid var(--accent-orange);
@@ -2068,6 +2149,9 @@ header .subtitle {
                 this.projectName = this.getProjectName();
                 this.projectData = null;
                 this.readmeContent = null;
+                this.readmeLoading = false;
+                this.readmeTaskId = null;
+                this.readmePollInterval = null;
                 this.init();
             }
 
@@ -2083,6 +2167,8 @@ header .subtitle {
                 }
                 await this.loadProjectData();
                 this.renderProject();
+                // 项目信息渲染完成后，开始异步加载 README
+                this.startAsyncReadmeLoad();
             }
 
             async loadProjectData() {
@@ -2121,34 +2207,160 @@ header .subtitle {
                             return;
                         }
                     }
-
-                    // 获取 README - 使用查询参数
-                    if (this.projectData && this.projectData.full_name) {
-                        try {
-                            const projectKey = encodeURIComponent(this.projectData.full_name);
-                            const readmeUrl = `/api/projects/readme?project_name=${projectKey}`;
-                            console.log('获取 README:', readmeUrl);
-                            const readmeResponse = await fetch(readmeUrl);
-                            const readmeData = await readmeResponse.json();
-                            
-                            if (readmeData.has_readme && readmeData.readme) {
-                                this.readmeContent = readmeData.readme;
-                                console.log('README加载成功');
-                            } else if (readmeData.error) {
-                                console.warn('README获取错误:', readmeData.error);
-                                this.readmeContent = null;
-                            } else {
-                                console.log('该项目无 README');
-                                this.readmeContent = null;
-                            }
-                        } catch (e) {
-                            console.warn('README加载失败:', e);
-                            this.readmeContent = null;
-                        }
-                    }
                 } catch (error) {
                     console.error('加载项目数据失败:', error);
                     this.showError('加载失败: ' + error.message);
+                }
+            }
+
+            // 异步加载 README（后台获取，前端轮询）
+            async startAsyncReadmeLoad() {
+                if (!this.projectData || !this.projectData.full_name) {
+                    this.updateReadmeSection(null, false);
+                    return;
+                }
+
+                this.readmeLoading = true;
+                const projectKey = encodeURIComponent(this.projectData.full_name);
+                
+                try {
+                    // 调用异步接口启动后台获取
+                    const startUrl = `/api/projects/readme/async?project_name=${projectKey}`;
+                    console.log('启动异步获取 README:', startUrl);
+                    
+                    const startResponse = await fetch(startUrl);
+                    const startData = await startResponse.json();
+                    
+                    if (startData.task_id) {
+                        this.readmeTaskId = startData.task_id;
+                        console.log('README 获取任务已启动:', this.readmeTaskId);
+                        
+                        // 开始轮询获取结果
+                        this.pollReadmeResult();
+                    } else {
+                        console.warn('启动异步获取失败:', startData.message);
+                        // 回退到同步方式
+                        this.loadReadmeSync();
+                    }
+                } catch (e) {
+                    console.warn('异步获取失败，回退到同步方式:', e);
+                    this.loadReadmeSync();
+                }
+            }
+
+            // 轮询 README 获取结果
+            pollReadmeResult() {
+                if (!this.readmeTaskId) return;
+                
+                const checkResult = async () => {
+                    try {
+                        const resultUrl = `/api/projects/readme/result/${this.readmeTaskId}`;
+                        const response = await fetch(resultUrl);
+                        const data = await response.json();
+                        
+                        console.log('README 任务状态:', data.status);
+                        
+                        if (data.status === 'success') {
+                            this.readmeContent = data.readme;
+                            this.readmeLoading = false;
+                            this.stopPolling();
+                            this.updateReadmeSection(data.readme, true);
+                        } else if (data.status === 'empty') {
+                            this.readmeContent = null;
+                            this.readmeLoading = false;
+                            this.stopPolling();
+                            this.updateReadmeSection(null, false);
+                        } else if (data.status === 'error') {
+                            this.readmeLoading = false;
+                            this.stopPolling();
+                            this.updateReadmeSection(null, false, data.message || '获取失败');
+                        } else if (data.status === 'pending') {
+                            // 继续轮询
+                            this.readmePollInterval = setTimeout(checkResult, 500);
+                        }
+                    } catch (e) {
+                        console.error('轮询 README 结果失败:', e);
+                        this.readmeLoading = false;
+                        this.stopPolling();
+                        this.updateReadmeSection(null, false, '网络错误');
+                    }
+                };
+                
+                // 延迟一下再开始轮询
+                this.readmePollInterval = setTimeout(checkResult, 300);
+            }
+
+            // 停止轮询
+            stopPolling() {
+                if (this.readmePollInterval) {
+                    clearTimeout(this.readmePollInterval);
+                    this.readmePollInterval = null;
+                }
+            }
+
+            // 同步加载 README（回退方案）
+            async loadReadmeSync() {
+                try {
+                    const projectKey = encodeURIComponent(this.projectData.full_name);
+                    const readmeUrl = `/api/projects/readme?project_name=${projectKey}`;
+                    console.log('同步获取 README:', readmeUrl);
+                    
+                    const readmeResponse = await fetch(readmeUrl);
+                    const readmeData = await readmeResponse.json();
+                    
+                    if (readmeData.has_readme && readmeData.readme) {
+                        this.readmeContent = readmeData.readme;
+                        this.readmeLoading = false;
+                        this.updateReadmeSection(readmeData.readme, true);
+                    } else if (readmeData.error) {
+                        this.updateReadmeSection(null, false, readmeData.error);
+                    } else {
+                        this.updateReadmeSection(null, false);
+                    }
+                } catch (e) {
+                    console.error('同步获取 README 失败:', e);
+                    this.updateReadmeSection(null, false, '网络错误');
+                }
+            }
+
+            // 重试加载 README
+            async retryLoadReadme() {
+                this.readmeTaskId = null;
+                this.startAsyncReadmeLoad();
+            }
+
+            // 更新 README 区域（不刷新整个页面）
+            updateReadmeSection(content, hasReadme, errorMsg = null) {
+                const readmeContainer = document.querySelector('.readme-container');
+                if (!readmeContainer) return;
+                
+                if (hasReadme && content) {
+                    readmeContainer.innerHTML = `
+                        <div class="readme-content">
+                            ${this.renderMarkdown(content)}
+                        </div>
+                    `;
+                } else {
+                    const p = this.projectData;
+                    readmeContainer.innerHTML = errorMsg ? `
+                        <div class="error-readme">
+                            <div class="error-readme-icon">⚠️</div>
+                            <p>${errorMsg}</p>
+                            <button class="btn-retry" onclick="projectDetail.retryLoadReadme()">
+                                🔄 重试加载
+                            </button>
+                        </div>
+                    ` : `
+                        <div class="empty-readme">
+                            <div class="empty-readme-icon">📝</div>
+                            <p>该项目暂无 README 文件</p>
+                            <p style="margin-top: 10px; font-size: 0.9rem;">
+                                <a href="${p?.url || '#'}" target="_blank" style="color: #667eea;">
+                                    前往 GitHub 查看项目详情 →
+                                </a>
+                            </p>
+                        </div>
+                    `;
                 }
             }
 
@@ -2297,31 +2509,29 @@ header .subtitle {
                         <div class="section-header">
                             <h2 class="section-title">📄 项目介绍</h2>
                         </div>
-                        <div class="readme-container">
-                            ${this.readmeContent ? `
-                                <div class="readme-content">
-                                    ${this.renderMarkdown(this.readmeContent)}
+                        <div class="readme-container" id="readme-section">
+                            <!-- README 加载骨架屏 -->
+                            <div class="readme-loading">
+                                <div class="loading-skeleton">
+                                    <div class="skeleton-line title"></div>
+                                    <div class="skeleton-line paragraph"></div>
+                                    <div class="skeleton-line paragraph"></div>
+                                    <div class="skeleton-line paragraph short"></div>
                                 </div>
-                            ` : `
-                                <div class="empty-readme">
-                                    <div class="empty-readme-icon">📝</div>
-                                    <p>该项目暂无 README 文件</p>
-                                    <p style="margin-top: 10px; font-size: 0.9rem;">
-                                        <a href="${p.url || '#'}" target="_blank" style="color: #667eea;">
-                                            前往 GitHub 查看项目详情 →
-                                        </a>
-                                    </p>
-                                </div>
-                            `}
+                                <p class="loading-hint">正在后台获取 README...</p>
+                            </div>
                         </div>
                     </div>
                 `;
             }
         }
 
+        // 全局变量供重试按钮使用
+        let projectDetail;
+
         document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.add('loaded');
-            new ProjectDetail();
+            projectDetail = new ProjectDetail();
         });
     </script>
     <!-- Markdown 渲染库 -->
