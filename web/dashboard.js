@@ -36,12 +36,15 @@ class GitHubTrendingDashboard {
                 const data = await response.json();
                 this.projects = (data.projects || []).map(p => this.normalizeProject(p));
                 this.updateLastUpdatedText(data.last_updated || data.lastUpdated);
+                this.renderProjects();
             } else {
                 await this.loadLocalData();
+                this.renderProjects();
             }
         } catch (error) {
             console.warn('API请求失败，使用本地数据:', error);
             await this.loadLocalData();
+            this.renderProjects();
         } finally {
             this.isLoading = false;
             this.hideLoading();
@@ -75,12 +78,15 @@ class GitHubTrendingDashboard {
                 const data = await response.json();
                 this.projects = (data.projects || []).map(p => this.normalizeProject(p));
                 this.updateLastUpdatedText(data.lastUpdated || data.last_updated);
+                this.renderProjects();
             } else {
                 this.useDefaultData();
+                this.renderProjects();
             }
         } catch (error) {
             console.error('加载本地数据失败:', error);
             this.useDefaultData();
+            this.renderProjects();
         }
     }
 

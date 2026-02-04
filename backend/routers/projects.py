@@ -33,7 +33,7 @@ async def get_projects():
 
         logger.info(f"返回 {len(projects)} 个项目")
         return ProjectsResponse(
-            last_updated=data.get("lastUpdated", ""),
+            last_updated=data.get("last_updated", ""),
             projects=projects,
             total_count=len(projects)
         )
@@ -92,7 +92,7 @@ async def refresh_projects():
         return RefreshResponse(
             success=True,
             message=f"成功获取 {len(projects)} 个项目",
-            last_updated=saved_data.get("lastUpdated", ""),
+            last_updated=saved_data.get("last_updated", ""),
             projects_count=len(projects)
         )
     except Exception as e:

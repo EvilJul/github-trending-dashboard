@@ -26,7 +26,7 @@ class StorageService:
     def save_projects(self, projects: List[ProjectCreate]) -> dict:
         """保存项目数据"""
         data = {
-            "lastUpdated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.utcnow().isoformat(),
             "projects": [p.model_dump() for p in projects],
             "total_projects": len(projects)
         }
@@ -97,7 +97,7 @@ class StorageService:
     def get_last_updated(self) -> Optional[datetime]:
         """获取最后更新时间"""
         data = self.load_projects()
-        last_updated = data.get("lastUpdated")
+        last_updated = data.get("last_updated")
         if last_updated:
             return datetime.fromisoformat(last_updated)
         return None
@@ -105,7 +105,7 @@ class StorageService:
     def _get_default_data(self) -> dict:
         """获取默认数据"""
         return {
-            "lastUpdated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.utcnow().isoformat(),
             "projects": [],
             "total_projects": 0
         }
