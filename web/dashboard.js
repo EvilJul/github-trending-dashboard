@@ -247,8 +247,8 @@ class GitHubTrendingDashboard {
         
         this.loadConfigFromBackend();
         
-        modal.style.display = 'block';
-        modal.classList.add('modal-show');
+        modal.style.display = 'flex';
+        modal.classList.add('show');
     }
 
     async loadConfigFromBackend() {
@@ -319,7 +319,7 @@ class GitHubTrendingDashboard {
         const providerSelect = document.getElementById('api-provider');
         
         const closeModal = () => {
-            modal.classList.remove('modal-show');
+            modal.classList.remove('show');
             setTimeout(() => { modal.style.display = 'none'; }, 200);
         };
 
