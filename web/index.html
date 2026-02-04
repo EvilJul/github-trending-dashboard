@@ -109,14 +109,17 @@
     
         /* ===== Header ===== */
         header {
-            padding: 40px 0;
-            margin-bottom: 40px;
+            padding: 30px 0;
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             flex-wrap: wrap;
             gap: 20px;
             animation: fadeInUp 0.8s ease forwards;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
     
         h1 {
@@ -233,9 +236,10 @@
         .controls {
             display: flex;
             justify-content: flex-end;
-            gap: 15px;
-            margin: 25px 0;
+            gap: 12px;
+            margin: 0;
             flex-wrap: wrap;
+            padding: 10px 0;
         }
     
         .generate-btn, .configure-btn, .ai-generate-btn {
@@ -523,7 +527,7 @@
         /* ===== 通知 ===== */
         .notification {
             position: fixed;
-            top: 20px;
+            top: 100px;
             right: 20px;
             padding: 16px 28px;
             border-radius: 6px;
@@ -533,6 +537,9 @@
             animation: fadeInUp 0.4s ease forwards;
             font-family: var(--font-mono);
             border: 1px solid;
+            max-width: 350px;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
     
         .notification.success {
@@ -617,7 +624,7 @@
     }
 
     .loading-text {
-        margin-top: 20px;
+        margin-top: 100px;
         color: var(--text-secondary);
         font-family: var(--font-mono);
         font-size: 0.9rem;
@@ -666,8 +673,8 @@
     }
     
     .projects-preview {
-        margin-top: 20px;
-        padding-top: 20px;
+        margin-top: 100px;
+        padding-top: 100px;
         border-top: 1px solid var(--border-color);
     }
     
@@ -1252,7 +1259,7 @@
         justify-content: space-between;
         align-items: center;
         margin-top: 25px;
-        padding-top: 20px;
+        padding-top: 100px;
         border-top: 1px solid var(--border-color);
     }
     
@@ -1434,7 +1441,7 @@
     .action-buttons {
         display: flex;
         gap: 12px;
-        margin-top: 20px;
+        margin-top: 100px;
     }
     
     .action-btn {

@@ -109,14 +109,17 @@
     
         /* ===== Header ===== */
         header {
-            padding: 40px 0;
-            margin-bottom: 40px;
+            padding: 30px 0;
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             flex-wrap: wrap;
             gap: 20px;
             animation: fadeInUp 0.8s ease forwards;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
     
         h1 {
@@ -233,9 +236,10 @@
         .controls {
             display: flex;
             justify-content: flex-end;
-            gap: 15px;
-            margin: 25px 0;
+            gap: 12px;
+            margin: 0;
             flex-wrap: wrap;
+            padding: 10px 0;
         }
     
         .generate-btn, .configure-btn, .ai-generate-btn {
@@ -1000,6 +1004,32 @@
     .readme-content pre code {
         background: none;
         padding: 0;
+    }
+
+    .readme-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        display: block;
+        margin: 20px auto;
+    }
+    
+    .readme-content table {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        display: block;
+        margin: 20px 0;
+    }
+    
+    .readme-content p {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+    
+    .readme-content a {
+        word-break: break-all;
     }
     
     .empty-readme {
