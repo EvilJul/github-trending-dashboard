@@ -42,7 +42,7 @@ class ProjectResponse(ProjectBase):
 
 class ProjectsResponse(BaseModel):
     """项目列表响应"""
-    last_updated: datetime
+    last_updated: Optional[str] = None  # 改为字符串，避免 datetime 解析问题
     projects: List[ProjectResponse]
     total_count: int
 
@@ -65,7 +65,7 @@ class RefreshResponse(BaseModel):
     """刷新响应"""
     success: bool
     message: str
-    last_updated: datetime
+    last_updated: Optional[str] = None
     projects_count: int
 
 
