@@ -25,20 +25,37 @@ if sys.platform.startswith('win'):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
-# 配置日志
+# 配置控制台和文件日志
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(logging.Formatter('\n%(asctime)s | %(levelname)-8s | %(message)s\n'))
+
+file_handler = logging.FileHandler(
+    os.path.join(LOG_DIR, f"app_{datetime.now().strftime('%Y%m%d')}.log"),
+    encoding='utf-8',
+    errors='replace'
+)
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(
-            os.path.join(LOG_DIR, f"app_{datetime.now().strftime('%Y%m%d')}.log"),
-            encoding='utf-8',
-            errors='replace'
-        )
-    ]
+    handlers=[console_handler, file_handler]
 )
 
 logger = logging.getLogger(__name__)
+
+# 请求日志中间件
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"📥 REQUEST: {request.method} {request.url.path}")
+    
+    response = await call_next(request)
+    
+    logger.info(f"📤 RESPONSE: {request.method} {request.url.path} -> {response.status_code}")
+    
+    return response
 
 
 @asynccontextmanager

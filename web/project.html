@@ -1413,6 +1413,46 @@
         align-items: center;
         gap: 10px;
     }
+
+    /* ===== 按钮基础样式 ===== */
+    .btn-primary,
+    .btn-secondary {
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        font-family: var(--font-mono);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--accent-cyan), #0099ff);
+        color: #000;
+    }
+    
+    .btn-primary:hover:not(:disabled) {
+        box-shadow: var(--glow-cyan);
+        transform: translateY(-2px);
+    }
+    
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .btn-secondary {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+    }
+    
+    .btn-secondary:hover {
+        border-color: var(--accent-magenta);
+        color: var(--accent-magenta);
+        box-shadow: var(--glow-magenta);
+    }
     @media (max-width: 768px) {
             h1 { font-size: 2rem; }
             .container { padding: 15px; }
