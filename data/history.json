@@ -12,11 +12,26 @@
         "Unknown": 1
       },
       "projects": [
-        { "name": "521xueweihan/HelloGitHub", "trend": "rising" },
-        { "name": "krahets/hello-algo", "trend": "rising" },
-        { "name": "lss233/kirara-ai", "trend": "rising" },
-        { "name": "jeecgboot/JeecgBoot", "trend": "rising" },
-        { "name": "alibaba/higress", "trend": "stable" }
+        {
+          "name": "521xueweihan/HelloGitHub",
+          "trend": "rising"
+        },
+        {
+          "name": "krahets/hello-algo",
+          "trend": "rising"
+        },
+        {
+          "name": "lss233/kirara-ai",
+          "trend": "rising"
+        },
+        {
+          "name": "jeecgboot/JeecgBoot",
+          "trend": "rising"
+        },
+        {
+          "name": "alibaba/higress",
+          "trend": "stable"
+        }
       ]
     },
     {
@@ -30,14 +45,46 @@
         "AI": 5
       },
       "projects": [
-        { "name": "alibaba/spring-ai-alibaba", "stars": 1100, "trend": "rising" },
-        { "name": "ultralytics/yolov5", "stars": 45000, "trend": "stable" },
-        { "name": "langchain-ai/langchain", "stars": 68000, "trend": "rising" },
-        { "name": "huggingface/transformers", "stars": 115000, "trend": "stable" },
-        { "name": "comfyui/ComfyUI", "stars": 52000, "trend": "rising" },
-        { "name": "ollama/ollama", "stars": 78000, "trend": "rising" },
-        { "name": "TeamNewPipe/NewPipe", "stars": 28800, "trend": "stable" },
-        { "name": "apache/dolphinscheduler", "stars": 12100, "trend": "stable" }
+        {
+          "name": "alibaba/spring-ai-alibaba",
+          "stars": 1100,
+          "trend": "rising"
+        },
+        {
+          "name": "ultralytics/yolov5",
+          "stars": 45000,
+          "trend": "stable"
+        },
+        {
+          "name": "langchain-ai/langchain",
+          "stars": 68000,
+          "trend": "rising"
+        },
+        {
+          "name": "huggingface/transformers",
+          "stars": 115000,
+          "trend": "stable"
+        },
+        {
+          "name": "comfyui/ComfyUI",
+          "stars": 52000,
+          "trend": "rising"
+        },
+        {
+          "name": "ollama/ollama",
+          "stars": 78000,
+          "trend": "rising"
+        },
+        {
+          "name": "TeamNewPipe/NewPipe",
+          "stars": 28800,
+          "trend": "stable"
+        },
+        {
+          "name": "apache/dolphinscheduler",
+          "stars": 12100,
+          "trend": "stable"
+        }
       ]
     },
     {
@@ -51,13 +98,231 @@
         "AI": 4
       },
       "projects": [
-        { "name": "langchain-ai/langchain", "stars": 67000, "trend": "rising" },
-        { "name": "ollama/ollama", "stars": 75000, "trend": "rising" },
-        { "name": "huggingface/transformers", "stars": 114000, "trend": "stable" },
-        { "name": "ultralytics/yolov5", "stars": 44800, "trend": "stable" },
-        { "name": "comfyui/ComfyUI", "stars": 50000, "trend": "rising" },
-        { "name": "TeamNewPipe/NewPipe", "stars": 28500, "trend": "stable" },
-        { "name": "apache/dolphinscheduler", "stars": 11900, "trend": "stable" }
+        {
+          "name": "langchain-ai/langchain",
+          "stars": 67000,
+          "trend": "rising"
+        },
+        {
+          "name": "ollama/ollama",
+          "stars": 75000,
+          "trend": "rising"
+        },
+        {
+          "name": "huggingface/transformers",
+          "stars": 114000,
+          "trend": "stable"
+        },
+        {
+          "name": "ultralytics/yolov5",
+          "stars": 44800,
+          "trend": "stable"
+        },
+        {
+          "name": "comfyui/ComfyUI",
+          "stars": 50000,
+          "trend": "rising"
+        },
+        {
+          "name": "TeamNewPipe/NewPipe",
+          "stars": 28500,
+          "trend": "stable"
+        },
+        {
+          "name": "apache/dolphinscheduler",
+          "stars": 11900,
+          "trend": "stable"
+        }
+      ]
+    }
+  ],
+  "records": [
+    {
+      "id": "2026-W6",
+      "week": "2026年第6周",
+      "date": "2026-02-06",
+      "total_projects": 30,
+      "projects": [
+        {
+          "name": "build-your-own-x",
+          "full_name": "codecrafters-io/build-your-own-x",
+          "stars": 463953,
+          "category": "通用工具"
+        },
+        {
+          "name": "freeCodeCamp",
+          "full_name": "freeCodeCamp/freeCodeCamp",
+          "stars": 436800,
+          "category": "前端技术"
+        },
+        {
+          "name": "awesome",
+          "full_name": "sindresorhus/awesome",
+          "stars": 435343,
+          "category": "通用工具"
+        },
+        {
+          "name": "public-apis",
+          "full_name": "public-apis/public-apis",
+          "stars": 395375,
+          "category": "Python生态"
+        },
+        {
+          "name": "free-programming-books",
+          "full_name": "EbookFoundation/free-programming-books",
+          "stars": 382128,
+          "category": "AI/机器学习"
+        },
+        {
+          "name": "developer-roadmap",
+          "full_name": "kamranahmedse/developer-roadmap",
+          "stars": 348615,
+          "category": "前端技术"
+        },
+        {
+          "name": "coding-interview-university",
+          "full_name": "jwasham/coding-interview-university",
+          "stars": 336807,
+          "category": "通用工具"
+        },
+        {
+          "name": "system-design-primer",
+          "full_name": "donnemartin/system-design-primer",
+          "stars": 334491,
+          "category": "Python生态"
+        },
+        {
+          "name": "awesome-python",
+          "full_name": "vinta/awesome-python",
+          "stars": 281566,
+          "category": "Python生态"
+        },
+        {
+          "name": "996.ICU",
+          "full_name": "996icu/996.ICU",
+          "stars": 275430,
+          "category": "通用工具"
+        },
+        {
+          "name": "awesome-selfhosted",
+          "full_name": "awesome-selfhosted/awesome-selfhosted",
+          "stars": 271814,
+          "category": "通用工具"
+        },
+        {
+          "name": "project-based-learning",
+          "full_name": "practical-tutorials/project-based-learning",
+          "stars": 257703,
+          "category": "通用工具"
+        },
+        {
+          "name": "react",
+          "full_name": "facebook/react",
+          "stars": 242816,
+          "category": "前端技术"
+        },
+        {
+          "name": "Python",
+          "full_name": "TheAlgorithms/Python",
+          "stars": 217462,
+          "category": "Python生态"
+        },
+        {
+          "name": "linux",
+          "full_name": "torvalds/linux",
+          "stars": 216412,
+          "category": "通用工具"
+        },
+        {
+          "name": "vue",
+          "full_name": "vuejs/vue",
+          "stars": 209897,
+          "category": "前端技术"
+        },
+        {
+          "name": "the-book-of-secret-knowledge",
+          "full_name": "trimstray/the-book-of-secret-knowledge",
+          "stars": 205241,
+          "category": "通用工具"
+        },
+        {
+          "name": "computer-science",
+          "full_name": "ossu/computer-science",
+          "stars": 201028,
+          "category": "通用工具"
+        },
+        {
+          "name": "javascript-algorithms",
+          "full_name": "trekhleb/javascript-algorithms",
+          "stars": 195518,
+          "category": "前端技术"
+        },
+        {
+          "name": "tensorflow",
+          "full_name": "tensorflow/tensorflow",
+          "stars": 193622,
+          "category": "AI/机器学习"
+        },
+        {
+          "name": "ohmyzsh",
+          "full_name": "ohmyzsh/ohmyzsh",
+          "stars": 184517,
+          "category": "AI/机器学习"
+        },
+        {
+          "name": "You-Dont-Know-JS",
+          "full_name": "getify/You-Dont-Know-JS",
+          "stars": 184360,
+          "category": "通用工具"
+        },
+        {
+          "name": "CS-Notes",
+          "full_name": "CyC2018/CS-Notes",
+          "stars": 183616,
+          "category": "通用工具"
+        },
+        {
+          "name": "AutoGPT",
+          "full_name": "Significant-Gravitas/AutoGPT",
+          "stars": 181666,
+          "category": "AI/机器学习"
+        },
+        {
+          "name": "vscode",
+          "full_name": "microsoft/vscode",
+          "stars": 181438,
+          "category": "前端技术"
+        },
+        {
+          "name": "Python-100-Days",
+          "full_name": "jackfrued/Python-100-Days",
+          "stars": 178507,
+          "category": "通用工具"
+        },
+        {
+          "name": "flutter",
+          "full_name": "flutter/flutter",
+          "stars": 174978,
+          "category": "通用工具"
+        },
+        {
+          "name": "bootstrap",
+          "full_name": "twbs/bootstrap",
+          "stars": 173975,
+          "category": "AI/机器学习"
+        },
+        {
+          "name": "n8n",
+          "full_name": "n8n-io/n8n",
+          "stars": 173222,
+          "category": "AI/机器学习"
+        },
+        {
+          "name": "gitignore",
+          "full_name": "github/gitignore",
+          "stars": 172281,
+          "category": "通用工具"
+        }
       ]
     }
   ]

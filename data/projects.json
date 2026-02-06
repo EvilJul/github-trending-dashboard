@@ -1,92 +1,575 @@
 {
-  "lastUpdated": "2026-01-30T02:00:00.000Z",
+  "last_updated": "2026-02-06 10:02:04",
   "projects": [
     {
-      "name": "521xueweihan/HelloGitHub",
-      "fullName": "521xueweihan/HelloGitHub",
-      "url": "https://github.com/521xueweihan/HelloGitHub",
-      "description": "分享 GitHub 上有趣、入门级的开源项目。Share interesting, entry-level open source projects on GitHub.",
-      "language": "Unknown",
-      "stars": 0,
-      "forks": 0,
-      "issues": 0,
-      "usageSteps": [
-        "访问项目仓库浏览开源项目列表",
-        "根据分类查找感兴趣的项目",
-        "克隆项目到本地进行学习"
-      ],
-      "trend": "rising",
-      "category": "资源汇总"
-    },
-    {
-      "name": "krahets/hello-algo",
-      "fullName": "krahets/hello-algo",
-      "url": "https://github.com/krahets/hello-algo",
-      "description": "《Hello 算法》：动画图解、一键运行的数据结构与算法教程。支持简中、繁中、English、日本語，提供 Python, Java, C++, C, C#, JS, Go, Swift, Rust, Ruby, Kotlin, TS, Dart 等代码实现",
+      "name": "build-your-own-x",
+      "full_name": "codecrafters-io/build-your-own-x",
+      "url": "https://github.com/codecrafters-io/build-your-own-x",
+      "description": "Master programming by recreating your favorite technologies from scratch.",
       "language": "Markdown",
-      "stars": 0,
-      "forks": 0,
-      "issues": 0,
-      "usageSteps": [
-        "访问项目仓库选择对应语言版本",
-        "阅读动画图解理解算法原理",
-        "运行代码示例进行实践"
-      ],
-      "trend": "rising",
-      "category": "学习资源"
-    },
-    {
-      "name": "lss233/kirara-ai",
-      "fullName": "lss233/kirara-ai",
-      "url": "https://github.com/lss233/kirara-ai",
-      "description": "🤖 可 DIY 的 多模态 AI 聊天机器人 | 🚀 快速接入 微信、 QQ、Telegram、等聊天平台 | 🦈支持DeepSeek、Grok、Claude、Ollama、Gemini、OpenAI | 工作流系统、网页搜索、AI画图、人设调教、虚拟女仆、语音对话 |",
-      "language": "Python",
-      "stars": 0,
-      "forks": 0,
-      "issues": 0,
-      "usageSteps": [
-        "克隆项目: git clone https://github.com/lss233/kirara-ai.git",
-        "安装依赖: pip install -r requirements.txt",
-        "配置API Key和平台账号",
-        "运行: python main.py"
-      ],
-      "trend": "rising",
-      "category": "AI应用"
-    },
-    {
-      "name": "jeecgboot/JeecgBoot",
-      "fullName": "jeecgboot/JeecgBoot",
-      "url": "https://github.com/jeecgboot/JeecgBoot",
-      "description": "【AI低代码平台】AI low-code platform empowers enterprises to quickly develop low-code solutions and build AI applications. 助力企业快速实现低代码开发和构建AI应用！",
-      "language": "Java",
-      "stars": 0,
-      "forks": 0,
-      "issues": 0,
-      "usageSteps": [
-        "下载源码或拉取Docker镜像",
-        "配置数据库和API Key",
-        "启动项目访问管理后台",
-        "使用低代码方式快速开发应用"
-      ],
-      "trend": "rising",
-      "category": "低代码"
-    },
-    {
-      "name": "alibaba/higress",
-      "fullName": "alibaba/higress",
-      "url": "https://github.com/alibaba/higress",
-      "description": "🤖 AI Gateway | AI Native API Gateway",
-      "language": "Java",
-      "stars": 0,
-      "forks": 0,
-      "issues": 0,
-      "usageSteps": [
-        "使用Docker部署: docker run -d --name higress -p 80:80 -p 443:443 higress/higress",
-        "配置AI模型接入",
-        "设置API路由和认证"
-      ],
+      "stars": 463953,
+      "forks": 43588,
+      "issues": 474,
+      "fork_url": "https://github.com/codecrafters-io/build-your-own-x/fork",
+      "issues_url": "https://github.com/codecrafters-io/build-your-own-x/issues",
+      "category": "通用工具",
       "trend": "stable",
-      "category": "AI框架"
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/codecrafters-io/build-your-own-x",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "freeCodeCamp",
+      "full_name": "freeCodeCamp/freeCodeCamp",
+      "url": "https://github.com/freeCodeCamp/freeCodeCamp",
+      "description": "freeCodeCamp.org's open-source codebase and curriculum. Learn math, programming, and computer science for free.",
+      "language": "TypeScript",
+      "stars": 436800,
+      "forks": 43320,
+      "issues": 323,
+      "fork_url": "https://github.com/freeCodeCamp/freeCodeCamp/fork",
+      "issues_url": "https://github.com/freeCodeCamp/freeCodeCamp/issues",
+      "category": "前端技术",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/freeCodeCamp/freeCodeCamp",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "awesome",
+      "full_name": "sindresorhus/awesome",
+      "url": "https://github.com/sindresorhus/awesome",
+      "description": "😎 Awesome lists about all kinds of interesting topics",
+      "language": "Other",
+      "stars": 435343,
+      "forks": 33101,
+      "issues": 68,
+      "fork_url": "https://github.com/sindresorhus/awesome/fork",
+      "issues_url": "https://github.com/sindresorhus/awesome/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/sindresorhus/awesome",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "public-apis",
+      "full_name": "public-apis/public-apis",
+      "url": "https://github.com/public-apis/public-apis",
+      "description": "A collective list of free APIs",
+      "language": "Python",
+      "stars": 395375,
+      "forks": 42289,
+      "issues": 824,
+      "fork_url": "https://github.com/public-apis/public-apis/fork",
+      "issues_url": "https://github.com/public-apis/public-apis/issues",
+      "category": "Python生态",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/public-apis/public-apis",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "free-programming-books",
+      "full_name": "EbookFoundation/free-programming-books",
+      "url": "https://github.com/EbookFoundation/free-programming-books",
+      "description": ":books: Freely available programming books",
+      "language": "Python",
+      "stars": 382128,
+      "forks": 65872,
+      "issues": 78,
+      "fork_url": "https://github.com/EbookFoundation/free-programming-books/fork",
+      "issues_url": "https://github.com/EbookFoundation/free-programming-books/issues",
+      "category": "AI/机器学习",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/EbookFoundation/free-programming-books",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "developer-roadmap",
+      "full_name": "kamranahmedse/developer-roadmap",
+      "url": "https://github.com/kamranahmedse/developer-roadmap",
+      "description": "Interactive roadmaps, guides and other educational content to help developers grow in their careers.",
+      "language": "TypeScript",
+      "stars": 348615,
+      "forks": 43692,
+      "issues": 29,
+      "fork_url": "https://github.com/kamranahmedse/developer-roadmap/fork",
+      "issues_url": "https://github.com/kamranahmedse/developer-roadmap/issues",
+      "category": "前端技术",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/kamranahmedse/developer-roadmap",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "coding-interview-university",
+      "full_name": "jwasham/coding-interview-university",
+      "url": "https://github.com/jwasham/coding-interview-university",
+      "description": "A complete computer science study plan to become a software engineer.",
+      "language": "Other",
+      "stars": 336807,
+      "forks": 81636,
+      "issues": 93,
+      "fork_url": "https://github.com/jwasham/coding-interview-university/fork",
+      "issues_url": "https://github.com/jwasham/coding-interview-university/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/jwasham/coding-interview-university",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "system-design-primer",
+      "full_name": "donnemartin/system-design-primer",
+      "url": "https://github.com/donnemartin/system-design-primer",
+      "description": "Learn how to design large-scale systems. Prep for the system design interview.  Includes Anki flashcards.",
+      "language": "Python",
+      "stars": 334491,
+      "forks": 54295,
+      "issues": 525,
+      "fork_url": "https://github.com/donnemartin/system-design-primer/fork",
+      "issues_url": "https://github.com/donnemartin/system-design-primer/issues",
+      "category": "Python生态",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/donnemartin/system-design-primer",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "awesome-python",
+      "full_name": "vinta/awesome-python",
+      "url": "https://github.com/vinta/awesome-python",
+      "description": "An opinionated list of awesome Python frameworks, libraries, software and resources.",
+      "language": "Python",
+      "stars": 281566,
+      "forks": 27149,
+      "issues": 15,
+      "fork_url": "https://github.com/vinta/awesome-python/fork",
+      "issues_url": "https://github.com/vinta/awesome-python/issues",
+      "category": "Python生态",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/vinta/awesome-python",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "996.ICU",
+      "full_name": "996icu/996.ICU",
+      "url": "https://github.com/996icu/996.ICU",
+      "description": "Repo for counting stars and contributing. Press F to pay respect to glorious developers.",
+      "language": "Other",
+      "stars": 275430,
+      "forks": 20973,
+      "issues": 16698,
+      "fork_url": "https://github.com/996icu/996.ICU/fork",
+      "issues_url": "https://github.com/996icu/996.ICU/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/996icu/996.ICU",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "awesome-selfhosted",
+      "full_name": "awesome-selfhosted/awesome-selfhosted",
+      "url": "https://github.com/awesome-selfhosted/awesome-selfhosted",
+      "description": "A list of Free Software network services and web applications which can be hosted on your own servers",
+      "language": "Other",
+      "stars": 271814,
+      "forks": 12374,
+      "issues": 0,
+      "fork_url": "https://github.com/awesome-selfhosted/awesome-selfhosted/fork",
+      "issues_url": "https://github.com/awesome-selfhosted/awesome-selfhosted/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/awesome-selfhosted/awesome-selfhosted",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "project-based-learning",
+      "full_name": "practical-tutorials/project-based-learning",
+      "url": "https://github.com/practical-tutorials/project-based-learning",
+      "description": "Curated list of project-based tutorials",
+      "language": "Other",
+      "stars": 257703,
+      "forks": 33619,
+      "issues": 275,
+      "fork_url": "https://github.com/practical-tutorials/project-based-learning/fork",
+      "issues_url": "https://github.com/practical-tutorials/project-based-learning/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/practical-tutorials/project-based-learning",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "react",
+      "full_name": "facebook/react",
+      "url": "https://github.com/facebook/react",
+      "description": "The library for web and native user interfaces.",
+      "language": "JavaScript",
+      "stars": 242816,
+      "forks": 50521,
+      "issues": 1115,
+      "fork_url": "https://github.com/facebook/react/fork",
+      "issues_url": "https://github.com/facebook/react/issues",
+      "category": "前端技术",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/facebook/react",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "Python",
+      "full_name": "TheAlgorithms/Python",
+      "url": "https://github.com/TheAlgorithms/Python",
+      "description": "All Algorithms implemented in Python",
+      "language": "Python",
+      "stars": 217462,
+      "forks": 50012,
+      "issues": 894,
+      "fork_url": "https://github.com/TheAlgorithms/Python/fork",
+      "issues_url": "https://github.com/TheAlgorithms/Python/issues",
+      "category": "Python生态",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/TheAlgorithms/Python",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "linux",
+      "full_name": "torvalds/linux",
+      "url": "https://github.com/torvalds/linux",
+      "description": "Linux kernel source tree",
+      "language": "C",
+      "stars": 216412,
+      "forks": 60331,
+      "issues": 3,
+      "fork_url": "https://github.com/torvalds/linux/fork",
+      "issues_url": "https://github.com/torvalds/linux/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/torvalds/linux",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "vue",
+      "full_name": "vuejs/vue",
+      "url": "https://github.com/vuejs/vue",
+      "description": "This is the repo for Vue 2. For Vue 3, go to https://github.com/vuejs/core",
+      "language": "TypeScript",
+      "stars": 209897,
+      "forks": 33890,
+      "issues": 622,
+      "fork_url": "https://github.com/vuejs/vue/fork",
+      "issues_url": "https://github.com/vuejs/vue/issues",
+      "category": "前端技术",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/vuejs/vue",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "the-book-of-secret-knowledge",
+      "full_name": "trimstray/the-book-of-secret-knowledge",
+      "url": "https://github.com/trimstray/the-book-of-secret-knowledge",
+      "description": "A collection of inspiring lists, manuals, cheatsheets, blogs, hacks, one-liners, cli/web tools and more.",
+      "language": "Other",
+      "stars": 205241,
+      "forks": 12392,
+      "issues": 103,
+      "fork_url": "https://github.com/trimstray/the-book-of-secret-knowledge/fork",
+      "issues_url": "https://github.com/trimstray/the-book-of-secret-knowledge/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/trimstray/the-book-of-secret-knowledge",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "computer-science",
+      "full_name": "ossu/computer-science",
+      "url": "https://github.com/ossu/computer-science",
+      "description": "🎓 Path to a free self-taught education in Computer Science!",
+      "language": "HTML",
+      "stars": 201028,
+      "forks": 25011,
+      "issues": 19,
+      "fork_url": "https://github.com/ossu/computer-science/fork",
+      "issues_url": "https://github.com/ossu/computer-science/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/ossu/computer-science",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "javascript-algorithms",
+      "full_name": "trekhleb/javascript-algorithms",
+      "url": "https://github.com/trekhleb/javascript-algorithms",
+      "description": "📝 Algorithms and data structures implemented in JavaScript with explanations and links to further readings",
+      "language": "JavaScript",
+      "stars": 195518,
+      "forks": 31127,
+      "issues": 388,
+      "fork_url": "https://github.com/trekhleb/javascript-algorithms/fork",
+      "issues_url": "https://github.com/trekhleb/javascript-algorithms/issues",
+      "category": "前端技术",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/trekhleb/javascript-algorithms",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "tensorflow",
+      "full_name": "tensorflow/tensorflow",
+      "url": "https://github.com/tensorflow/tensorflow",
+      "description": "An Open Source Machine Learning Framework for Everyone",
+      "language": "C++",
+      "stars": 193622,
+      "forks": 75212,
+      "issues": 3289,
+      "fork_url": "https://github.com/tensorflow/tensorflow/fork",
+      "issues_url": "https://github.com/tensorflow/tensorflow/issues",
+      "category": "AI/机器学习",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/tensorflow/tensorflow",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "ohmyzsh",
+      "full_name": "ohmyzsh/ohmyzsh",
+      "url": "https://github.com/ohmyzsh/ohmyzsh",
+      "description": "🙃   A delightful community-driven (with 2,400+ contributors) framework for managing your zsh configuration. Includes 300+ optional plugins (rails, git, macOS, hub, docker, homebrew, node, php, python, etc), 140+ themes to spice up your morning, and an auto-update tool that makes it easy to keep up with the latest updates from the community.",
+      "language": "Shell",
+      "stars": 184517,
+      "forks": 26291,
+      "issues": 508,
+      "fork_url": "https://github.com/ohmyzsh/ohmyzsh/fork",
+      "issues_url": "https://github.com/ohmyzsh/ohmyzsh/issues",
+      "category": "AI/机器学习",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/ohmyzsh/ohmyzsh",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "You-Dont-Know-JS",
+      "full_name": "getify/You-Dont-Know-JS",
+      "url": "https://github.com/getify/You-Dont-Know-JS",
+      "description": "A book series (2 published editions) on the JS language.",
+      "language": "Other",
+      "stars": 184360,
+      "forks": 33671,
+      "issues": 3,
+      "fork_url": "https://github.com/getify/You-Dont-Know-JS/fork",
+      "issues_url": "https://github.com/getify/You-Dont-Know-JS/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/getify/You-Dont-Know-JS",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "CS-Notes",
+      "full_name": "CyC2018/CS-Notes",
+      "url": "https://github.com/CyC2018/CS-Notes",
+      "description": ":books: 技术面试必备基础知识、Leetcode、计算机操作系统、计算机网络、系统设计",
+      "language": "Other",
+      "stars": 183616,
+      "forks": 51214,
+      "issues": 194,
+      "fork_url": "https://github.com/CyC2018/CS-Notes/fork",
+      "issues_url": "https://github.com/CyC2018/CS-Notes/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/CyC2018/CS-Notes",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "AutoGPT",
+      "full_name": "Significant-Gravitas/AutoGPT",
+      "url": "https://github.com/Significant-Gravitas/AutoGPT",
+      "description": "AutoGPT is the vision of accessible AI for everyone, to use and to build on. Our mission is to provide the tools, so that you can focus on what matters.",
+      "language": "Python",
+      "stars": 181666,
+      "forks": 46257,
+      "issues": 329,
+      "fork_url": "https://github.com/Significant-Gravitas/AutoGPT/fork",
+      "issues_url": "https://github.com/Significant-Gravitas/AutoGPT/issues",
+      "category": "AI/机器学习",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/Significant-Gravitas/AutoGPT",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "vscode",
+      "full_name": "microsoft/vscode",
+      "url": "https://github.com/microsoft/vscode",
+      "description": "Visual Studio Code",
+      "language": "TypeScript",
+      "stars": 181438,
+      "forks": 37758,
+      "issues": 13601,
+      "fork_url": "https://github.com/microsoft/vscode/fork",
+      "issues_url": "https://github.com/microsoft/vscode/issues",
+      "category": "前端技术",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/microsoft/vscode",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "Python-100-Days",
+      "full_name": "jackfrued/Python-100-Days",
+      "url": "https://github.com/jackfrued/Python-100-Days",
+      "description": "Python - 100天从新手到大师",
+      "language": "Jupyter Notebook",
+      "stars": 178507,
+      "forks": 55380,
+      "issues": 753,
+      "fork_url": "https://github.com/jackfrued/Python-100-Days/fork",
+      "issues_url": "https://github.com/jackfrued/Python-100-Days/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/jackfrued/Python-100-Days",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "flutter",
+      "full_name": "flutter/flutter",
+      "url": "https://github.com/flutter/flutter",
+      "description": "Flutter makes it easy and fast to build beautiful apps for mobile and beyond",
+      "language": "Dart",
+      "stars": 174978,
+      "forks": 29933,
+      "issues": 12427,
+      "fork_url": "https://github.com/flutter/flutter/fork",
+      "issues_url": "https://github.com/flutter/flutter/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/flutter/flutter",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "bootstrap",
+      "full_name": "twbs/bootstrap",
+      "url": "https://github.com/twbs/bootstrap",
+      "description": "The most popular HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web.",
+      "language": "MDX",
+      "stars": 173975,
+      "forks": 79133,
+      "issues": 571,
+      "fork_url": "https://github.com/twbs/bootstrap/fork",
+      "issues_url": "https://github.com/twbs/bootstrap/issues",
+      "category": "AI/机器学习",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/twbs/bootstrap",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "n8n",
+      "full_name": "n8n-io/n8n",
+      "url": "https://github.com/n8n-io/n8n",
+      "description": "Fair-code workflow automation platform with native AI capabilities. Combine visual building with custom code, self-host or cloud, 400+ integrations.",
+      "language": "TypeScript",
+      "stars": 173222,
+      "forks": 54552,
+      "issues": 1342,
+      "fork_url": "https://github.com/n8n-io/n8n/fork",
+      "issues_url": "https://github.com/n8n-io/n8n/issues",
+      "category": "AI/机器学习",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/n8n-io/n8n",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
+    },
+    {
+      "name": "gitignore",
+      "full_name": "github/gitignore",
+      "url": "https://github.com/github/gitignore",
+      "description": "A collection of useful .gitignore templates",
+      "language": "Other",
+      "stars": 172281,
+      "forks": 82866,
+      "issues": 94,
+      "fork_url": "https://github.com/github/gitignore/fork",
+      "issues_url": "https://github.com/github/gitignore/issues",
+      "category": "通用工具",
+      "trend": "stable",
+      "usage_steps": [
+        "克隆项目: git clone https://github.com/github/gitignore",
+        "进入项目目录",
+        "按照 README.md 说明安装和运行"
+      ]
     }
   ]
 }
